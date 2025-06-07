@@ -3,12 +3,12 @@
     <div class="bg-white dark:bg-dim-900">
 
       <div v-if="isAuthLoading" class="min-h-screen flex items-center justify-center">
-        <p class="text-2xl dark:text-white">Loading...</p>
+        <UISpinner />
       </div>
 
       <div v-else>
         <NuxtLayout>
-           <NuxtPage />
+          <NuxtPage />
         </NuxtLayout>
       </div>
 
@@ -17,18 +17,13 @@
 </template>
 
 <script setup>
-const darkMode = ref(false) // Bunu daha sonra state'e taşıyacağız
+import UISpinner from '~/components/UI/Spinner.vue';
+const darkMode = ref(false);
 
-const { useAuthLoading, initAuth, useAuthUser } = useAuth()
-const isAuthLoading = useAuthLoading()
-const user = useAuthUser()
+const { useAuthLoading, initAuth } = useAuth();
+const isAuthLoading = useAuthLoading();
 
-// Uygulama ilk yüklendiğinde çalışır
 onBeforeMount(() => {
-    initAuth().catch(error => {
-        // Token geçersiz veya yoksa hata verecek, bu normal.
-        // Middleware bizi login sayfasına yönlendirecek.
-        console.log('User not authenticated')
-    })
-})
+  initAuth().catch(() => {});
+});
 </script>

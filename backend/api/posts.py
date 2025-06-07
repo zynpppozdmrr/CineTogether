@@ -62,7 +62,8 @@ def get_posts_by_username(username):
             "content": post.content,
             "image_url": post.image_url,
             "created_at": post.created_at,
-            "is_official": post.is_official
+            "is_official": post.is_official,
+            "user_id": post.user_id
         } for post in posts]
 
         return jsonify({"success": True, "posts": result, "count": len(result)})

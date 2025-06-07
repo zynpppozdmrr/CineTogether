@@ -12,8 +12,15 @@
 
         <div v-else>
             <div v-for="post in homePosts" :key="post.id">
-                <PostCard v-if="post && getAuthor(post)" :post="post" :author="getAuthor(post)" :user="user" />
-            </div>
+
+    <PostCard 
+        v-for="post in homePosts" 
+        :key="post.id" 
+        :post="post" 
+        :user="user"
+        :allUsers="users"
+    />
+           </div>
         </div>
     </div>
 </template>

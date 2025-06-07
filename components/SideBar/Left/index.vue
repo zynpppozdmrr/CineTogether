@@ -61,26 +61,25 @@
 </template>
 
 <script setup>
-// Import both outline and solid icons from heroicons
 import { HomeIcon as HomeIconOutline, UserIcon as UserIconOutline, BookmarkIcon as BookmarkIconOutline, FilmIcon as FilmIconOutline } from '@heroicons/vue/outline'
 import { HomeIcon as HomeIconSolid, UserIcon as UserIconSolid, BookmarkIcon as BookmarkIconSolid, FilmIcon as FilmIconSolid } from '@heroicons/vue/solid'
-
 import SidebarLeftTab from './Tab.vue';
 import { useRoute } from 'vue-router'
+
+// Get the logged-in user's data
+const { useAuthUser } = useAuth()
+const user = useAuthUser()
 
 const { defaultTransition } = useTailwindConfig();
 const route = useRoute();
 
-// Function to check if a tab is active
 const isActive = (path) => route.path === path;
 
-// Navigation items for cleanliness
 const home = { name: 'Home', to: '/' };
 const movies = { name: 'Movies', to: '/movies' };
 const favorites = { name: 'Favorites', to: '/favorites' };
-const profile = { name: 'Profile', to: '/profile' };
+// Update the profile object to have a dynamic 'to' link
+const profile = { name: 'Profile', to: `/profile/${user.value?.username}` };
 
-// We still need a placeholder for the logo
 const FilmIcon = FilmIconOutline;
-
 </script>
