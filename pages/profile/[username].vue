@@ -46,37 +46,28 @@
 
     <div v-else>
       <div class="border-b dark:border-gray-700 p-4">
-        <div class="flex items-center justify-between">
-          <img
-            :src="profileUser.profile_picture_url || '/default-avatar.png'"
-            class="w-24 h-24 rounded-full border-4 dark:border-dim-900"
-          />
-
-          <div
-            v-if="
-              loggedInUser && profileUser && loggedInUser.id !== profileUser.id
-            "
-          >
-            <button
-              v-if="isFollowing"
-              @click="handleUnfollow"
-              class="px-4 py-2 font-bold bg-transparent border-2 border-gray-400 text-black dark:text-white rounded-full hover:bg-red-500 hover:text-white hover:border-red-500"
-            >
-              Unfollow
-            </button>
-
-            <button
-              v-else
-              @click="handleFollow"
-              class="px-4 py-2 font-bold text-white bg-black dark:bg-white dark:text-black rounded-full hover:opacity-90"
-            >
-              Follow
-            </button>
-          </div>
-           <button v-else @click="openEditModal" class="px-4 py-2 font-bold text-black dark:text-white bg-white dark:bg-black border-2 dark:border-white rounded-full hover:bg-gray-100 dark:hover:bg-white/90">
+     <div class="flex items-center justify-between">
+    <img :src="profileUser.profile_picture_url || '/default-avatar.png'" class="w-24 h-24 rounded-full border-4 dark:border-dim-900" />
+    
+    <div v-if="loggedInUser && profileUser" class="mt-4">
+        
+        <button v-if="loggedInUser.id === profileUser.id" @click="openEditModal" class="px-4 py-1.5 font-bold text-sm text-gray-800 dark:text-white bg-transparent border-2 border-gray-300 dark:border-gray-700 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800">
             Edit Profile
+        </button>
+
+        <div v-else>
+            <button v-if="isFollowing" @click="handleUnfollow" 
+                class="group px-4 py-1.5 font-bold text-sm text-black dark:text-white bg-transparent border-2 border-gray-300 dark:border-gray-700 rounded-full hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-500/10">
+                <span class="group-hover:hidden">Following</span>
+                <span class="hidden group-hover:block text-red-500">Unfollow</span>
+            </button>
+            
+            <button v-else @click="handleFollow" class="px-4 py-1.5 font-bold text-sm text-white bg-black dark:bg-white dark:text-black rounded-full hover:opacity-90">
+                Follow
             </button>
         </div>
+    </div>
+    </div>
         
         <div class="mt-4">
           <p class="text-xl font-bold">{{ profileUser.full_name }}</p>
