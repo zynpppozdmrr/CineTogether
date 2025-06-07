@@ -1,17 +1,19 @@
+# backend/api/follows.py
+
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from cineTogether.models.user_model import User
 from cineTogether.models.follow_model import Follow
 
-apiFollows= Blueprint("apiFollows", __name__, url_prefix="/api/follows")
-
-
-
+apiFollows = Blueprint("apiFollows", __name__, url_prefix="/api/follows")
 
 @apiFollows.route("/follow", methods=["POST"])
 @jwt_required()
 def follow_user():
-    current_user_id = get_jwt_identity()
+    # THE FIX IS HERE: Convert the identity from the token (which is a string) to an integer.
+    
+    
+    current_user_id = int(get_jwt_identity())
     followee_id = request.form.get("followee_id")
 
     if not followee_id:
@@ -27,7 +29,8 @@ def follow_user():
 @apiFollows.route("/unfollow", methods=["POST"])
 @jwt_required()
 def unfollow_user():
-    current_user_id = get_jwt_identity()
+    # THE FIX IS HERE: Also apply the fix to the unfollow function.
+    current_user_id = int(get_jwt_identity())
     followee_id = request.form.get("followee_id")
 
     if not followee_id:
@@ -49,3 +52,17 @@ def get_followers(user_id):
         "followers": followers,
         "count": len(followers)
     })
+
+@apiFollows.route("/following/<int:user_id>", methods=["GET"])
+def get_following(user_id):
+    try:
+        following_list = Follow.get_following(user_id)
+        return jsonify({
+            "success": True,
+            "user_id": user_id,
+            "following": following_list,
+            "count": len(following_list)
+        })
+    except Exception as e:
+        print("ERROR in get_following:", e)
+        return jsonify({"success": False, "message": "Internal server error"}), 500

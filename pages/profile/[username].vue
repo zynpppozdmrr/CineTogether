@@ -1,35 +1,88 @@
 <template>
   <div>
-    <div class="sticky top-0 z-10 px-4 py-2 bg-white/80 backdrop-blur-md dark:bg-dim-900/80 border-b dark:border-gray-700">
+    <div
+      class="sticky top-0 z-10 px-4 py-2 bg-white/80 backdrop-blur-md dark:bg-dim-900/80 border-b dark:border-gray-700"
+    >
       <div class="flex items-center">
-        <button @click="router.back()" class="p-2 mr-4 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        <button
+          @click="router.back()"
+          class="p-2 mr-4 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            ></path>
+          </svg>
         </button>
+
         <div v-if="profileUser">
           <h2 class="text-lg font-bold">{{ profileUser.full_name }}</h2>
-          <p v-if="posts" class="text-sm text-gray-500">{{ posts.length }} Posts</p>
+
+          <p v-if="posts" class="text-sm text-gray-500">
+            {{ posts.length }} Posts
+          </p>
         </div>
       </div>
     </div>
-    
+
     <div v-if="pending" class="flex items-center justify-center p-8">
       <UISpinner />
     </div>
 
-    <div v-else-if="error || !profileUser" class="p-4 text-center text-gray-500">
+    <div
+      v-else-if="error || !profileUser"
+      class="p-4 text-center text-gray-500"
+    >
       <p>Could not load profile.</p>
     </div>
 
     <div v-else>
-      <div class="border-b dark:border-gray-700">
-        <div class="p-4">
-          <img :src="profileUser.profile_picture_url || '/default-avatar.png'" class="w-24 h-24 rounded-full border-4 dark:border-dim-900" />
-          <div class="mt-4">
-            <p class="text-xl font-bold">{{ profileUser.full_name }}</p>
-            <p class="text-sm text-gray-500">@{{ profileUser.username }}</p>
+      <div class="border-b dark:border-gray-700 p-4">
+        <div class="flex items-center justify-between">
+          <img
+            :src="profileUser.profile_picture_url || '/default-avatar.png'"
+            class="w-24 h-24 rounded-full border-4 dark:border-dim-900"
+          />
+
+          <div
+            v-if="
+              loggedInUser && profileUser && loggedInUser.id !== profileUser.id
+            "
+          >
+            <button
+              v-if="isFollowing"
+              @click="handleUnfollow"
+              class="px-4 py-2 font-bold bg-transparent border-2 border-gray-400 text-black dark:text-white rounded-full hover:bg-red-500 hover:text-white hover:border-red-500"
+            >
+              Following
+            </button>
+
+            <button
+              v-else
+              @click="handleFollow"
+              class="px-4 py-2 font-bold text-white bg-black dark:bg-white dark:text-black rounded-full hover:opacity-90"
+            >
+              Follow
+            </button>
           </div>
-          <p class="mt-2 text-gray-800 dark:text-gray-300">{{ profileUser.bio }}</p>
         </div>
+
+        <div class="mt-4">
+          <p class="text-xl font-bold">{{ profileUser.full_name }}</p>
+
+          <p class="text-sm text-gray-500">@{{ profileUser.username }}</p>
+        </div>
+        <p class="mt-2 text-gray-800 dark:text-gray-300">
+          {{ profileUser.bio }}
+        </p>
       </div>
 
       <div v-if="posts && posts.length > 0">
@@ -37,11 +90,12 @@
           v-for="post in posts"
           :key="post.id"
           :post="post"
-          :author="profileUser" 
+          :author="profileUser"
           :user="loggedInUser"
           :allUsers="allUsers"
         />
       </div>
+
       <div v-else class="p-4 text-center text-gray-500">
         <p>@{{ profileUser.username }} hasn't posted yet.</p>
       </div>
@@ -50,55 +104,136 @@
 </template>
 
 <script setup>
-import PostCard from '~/components/Post/Card.vue';
-import UISpinner from '~/components/UI/Spinner.vue';
+import PostCard from "~/components/Post/Card.vue";
+
+import UISpinner from "~/components/UI/Spinner.vue";
+
+import { useFollows } from "~/composables/useFollows.js";
 
 const route = useRoute();
+
 const router = useRouter();
+
 const { useAuthUser } = useAuth();
+
+const { followUser, unfollowUser } = useFollows(); // unfollowUser'ı da alıyoruz
+
 const loggedInUser = useAuthUser();
 
 const username = route.params.username;
 
-// useAsyncData is the most robust way to fetch data.
 const { data, pending, error } = await useAsyncData(
   `profile-${username}`,
+
   async () => {
     try {
       const [userRes, postsRes, allUsersRes] = await Promise.all([
-        $fetch(`/api/users/${username}`, { baseURL: 'http://127.0.0.1:5000' }),
-        $fetch(`/api/posts/${username}`, { baseURL: 'http://127.0.0.1:5000' }),
-        $fetch('/api/users/', { baseURL: 'http://127.0.0.1:5000' }) // We need all users for the PostCard
+        $fetch(`/api/users/${username}`, { baseURL: "http://127.0.0.1:5000" }),
+
+        $fetch(`/api/posts/${username}`, { baseURL: "http://127.0.0.1:5000" }),
+
+        $fetch("/api/users/", { baseURL: "http://127.0.0.1:5000" }),
       ]);
 
+      const profileUser = userRes.data;
+
+      if (!profileUser) throw new Error("User not found");
+
+      // Takipçi bilgisini de çekiyoruz
+
+      const followersRes = await $fetch(
+        `/api/follows/followers/${profileUser.id}`,
+        { baseURL: "http://127.0.0.1:5000" }
+      );
+
       const userPosts = postsRes.posts || [];
-      // Enrich posts with like/comment data before displaying
-      const likePromises = userPosts.map(post => $fetch(`/api/likes/post/${post.id}`, { baseURL: 'http://127.0.0.1:5000' }));
-      const commentPromises = userPosts.map(post => $fetch(`/api/comments/post/${post.id}`, { baseURL: 'http://127.0.0.1:5000' }));
-      
+
+      const likePromises = userPosts.map((post) =>
+        $fetch(`/api/likes/post/${post.id}`, {
+          baseURL: "http://127.0.0.1:5000",
+        })
+      );
+
+      const commentPromises = userPosts.map((post) =>
+        $fetch(`/api/comments/post/${post.id}`, {
+          baseURL: "http://127.0.0.1:5000",
+        })
+      );
+
       const likeResults = await Promise.all(likePromises);
+
       const commentResults = await Promise.all(commentPromises);
 
       const enrichedPosts = userPosts.map((post, index) => ({
         ...post,
+
         likes: likeResults[index].likes || [],
+
         comments_count: commentResults[index].comments.length || 0,
       }));
 
       return {
-        profileUser: userRes.data,
+        profileUser,
+
         posts: enrichedPosts,
-        allUsers: allUsersRes.data // Return all users
+        allUsers: allUsersRes.data,
+
+        followers: followersRes.followers, // Takipçileri de dataya ekliyoruz
       };
     } catch (e) {
-      console.error('Error fetching profile data:', e);
-      return { profileUser: null, posts: [], allUsers: [] };
+      console.error("Error fetching profile data:", e);
+
+      return { profileUser: null, posts: [], allUsers: [], followers: [] };
     }
   }
 );
 
-// Computed properties to safely access the data from useAsyncData
 const profileUser = computed(() => data.value?.profileUser);
+
 const posts = computed(() => data.value?.posts || []);
+
 const allUsers = computed(() => data.value?.allUsers || []);
+
+const followers = ref(data.value?.followers || []); // Takipçileri reaktif bir değişkene atıyoruz
+
+// ============== GÜNCELLENMİŞ BÖLÜM ==============
+
+const isFollowing = computed(() => {
+  if (!loggedInUser.value || !followers.value) return false;
+  return followers.value.some((f) => f.follower_id === loggedInUser.value.id);
+});
+
+async function handleFollow() {
+  if (!profileUser.value) return;
+
+  try {
+    await followUser(profileUser.value.id);
+
+    // Arayüzü anında güncelle
+
+    followers.value.push({ follower_id: loggedInUser.value.id });
+  } catch (err) {
+    console.error("Failed to follow user:", err);
+  }
+}
+
+async function handleUnfollow() {
+  if (!profileUser.value) return;
+
+  try {
+    await unfollowUser(profileUser.value.id);
+
+    // Arayüzü anında güncelle
+
+    const index = followers.value.findIndex(
+      (f) => f.follower_id === loggedInUser.value.id
+    );
+
+    if (index !== -1) {
+      followers.value.splice(index, 1);
+    }
+  } catch (err) {
+    console.error("Failed to unfollow user:", err);
+  }
+}
 </script>

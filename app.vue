@@ -18,7 +18,7 @@
 
 <script setup>
 import UISpinner from '~/components/UI/Spinner.vue';
-const darkMode = ref(false);
+const darkMode = ref(true);
 
 const { useAuthLoading, initAuth } = useAuth();
 const isAuthLoading = useAuthLoading();
