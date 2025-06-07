@@ -38,6 +38,27 @@ export default () => {
         });
     };
 
+     const registerUser = (registerData) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const formData = new FormData();
+                formData.append('username', registerData.username);
+                formData.append('email', registerData.email);
+                formData.append('password', registerData.password);
+                formData.append('full_name', registerData.fullName);
+
+                const response = await $fetch('http://127.0.0.1:5000/api/users/addUser', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                resolve(response);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
     // 2. YENİ FONKSİYON: Çıkış yapma
     const logout = () => {
         return new Promise((resolve) => {
@@ -92,7 +113,8 @@ export default () => {
 
     return {
         login,
-        logout, // Logout fonksiyonunu dışarı açtık
+        logout,
+        registerUser, // Logout fonksiyonunu dışarı açtık
         initAuth,
         useAuthUser,
         useAuthToken,
