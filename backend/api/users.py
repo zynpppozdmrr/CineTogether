@@ -202,6 +202,7 @@ def login():
                 "username": user.username,
                 "email": user.email,
                 "role": user.role,
+                "full_name": user.full_name,
                 "profile_picture_url": user.profile_picture_url
 
             }
@@ -229,6 +230,7 @@ def get_current_user():
                 "username": user.username,
                 "email": user.email,
                 "role": user.role,
+                "full_name": user.full_name,
                 "profile_picture_url": user.profile_picture_url
             }
         })

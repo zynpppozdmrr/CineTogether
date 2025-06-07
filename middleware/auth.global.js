@@ -16,4 +16,13 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (!user.value && !isAuthPage) {
         return navigateTo('/login')
     }
+
+     // YENİ BÖLÜM: Admin Rota Koruması
+    // Eğer gidilecek yol '/admin' ile başlıyorsa
+    if (to.path.startsWith('/admin')) {
+        // Ve kullanıcı admin değilse, anasayfaya yönlendir.
+        if (user.value?.role !== 'admin') {
+            return navigateTo('/')
+        }
+    }
 })
