@@ -62,7 +62,7 @@
               @click="handleUnfollow"
               class="px-4 py-2 font-bold bg-transparent border-2 border-gray-400 text-black dark:text-white rounded-full hover:bg-red-500 hover:text-white hover:border-red-500"
             >
-              Following
+              Unfollow
             </button>
 
             <button
@@ -73,8 +73,11 @@
               Follow
             </button>
           </div>
+           <button v-else @click="openEditModal" class="px-4 py-2 font-bold text-black dark:text-white bg-white dark:bg-black border-2 dark:border-white rounded-full hover:bg-gray-100 dark:hover:bg-white/90">
+            Edit Profile
+            </button>
         </div>
-
+        
         <div class="mt-4">
           <p class="text-xl font-bold">{{ profileUser.full_name }}</p>
 
@@ -83,6 +86,19 @@
         <p class="mt-2 text-gray-800 dark:text-gray-300">
           {{ profileUser.bio }}
         </p>
+
+        <div class="flex space-x-4 mt-4">
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="font-bold text-black dark:text-white mr-1">{{ followingCount }}</span>
+                <span>Following</span>
+            </div>
+             <div class="flex items-center text-sm text-gray-500">
+                <span class="font-bold text-black dark:text-white mr-1">{{ followersCount }}</span>
+                <span>Followers</span>
+            </div>
+        </div>
+
+
       </div>
 
       <div v-if="posts && posts.length > 0">
@@ -101,6 +117,15 @@
       </div>
     </div>
   </div>
+
+  <ProfileEditModal
+    v-if="profileUser"
+    :isOpen="isEditModalOpen"
+    :user="profileUser"
+    @onClose="closeEditModal"
+    @onSuccess="handleFormSuccess"
+  />
+  
 </template>
 
 <script setup>
@@ -109,6 +134,8 @@ import PostCard from "~/components/Post/Card.vue";
 import UISpinner from "~/components/UI/Spinner.vue";
 
 import { useFollows } from "~/composables/useFollows.js";
+
+import ProfileEditModal from '~/components/Profile/EditModal.vue';
 
 const route = useRoute();
 
@@ -122,7 +149,7 @@ const loggedInUser = useAuthUser();
 
 const username = route.params.username;
 
-const { data, pending, error } = await useAsyncData(
+const { data, pending, error, refresh } = await useAsyncData(
   `profile-${username}`,
 
   async () => {
@@ -139,12 +166,15 @@ const { data, pending, error } = await useAsyncData(
 
       if (!profileUser) throw new Error("User not found");
 
+      
+
       // Takipçi bilgisini de çekiyoruz
 
-      const followersRes = await $fetch(
-        `/api/follows/followers/${profileUser.id}`,
-        { baseURL: "http://127.0.0.1:5000" }
-      );
+      // Takipçi ve takip edilen verilerini aynı anda çekiyoruz
+      const [followersRes, followingRes] = await Promise.all([
+        $fetch(`/api/follows/followers/${profileUser.id}`, { baseURL: "http://127.0.0.1:5000" }),
+        $fetch(`/api/follows/following/${profileUser.id}`, { baseURL: "http://127.0.0.1:5000" })
+      ]);
 
       const userPosts = postsRes.posts || [];
 
@@ -178,7 +208,9 @@ const { data, pending, error } = await useAsyncData(
         posts: enrichedPosts,
         allUsers: allUsersRes.data,
 
-        followers: followersRes.followers, // Takipçileri de dataya ekliyoruz
+        followers: followersRes.followers,
+        following: followingRes.following
+
       };
     } catch (e) {
       console.error("Error fetching profile data:", e);
@@ -193,9 +225,13 @@ const profileUser = computed(() => data.value?.profileUser);
 const posts = computed(() => data.value?.posts || []);
 
 const allUsers = computed(() => data.value?.allUsers || []);
+// Takipçileri reaktif bir değişkene atıyoruz
 
-const followers = ref(data.value?.followers || []); // Takipçileri reaktif bir değişkene atıyoruz
+const followers = ref(data.value?.followers || []);
+const following = ref(data.value?.following || []);
 
+const followersCount = computed(() => followers.value?.length || 0);
+const followingCount = computed(() => following.value?.length || 0);
 // ============== GÜNCELLENMİŞ BÖLÜM ==============
 
 const isFollowing = computed(() => {
@@ -235,5 +271,17 @@ async function handleUnfollow() {
   } catch (err) {
     console.error("Failed to unfollow user:", err);
   }
+}
+
+const isEditModalOpen = ref(false);
+function openEditModal() {
+    isEditModalOpen.value = true;
+}
+function closeEditModal() {
+    isEditModalOpen.value = false;
+}
+function handleFormSuccess() {
+    closeEditModal();
+    refresh(); // Sayfadaki veriyi yenilemek için useAsyncData'nın refresh fonksiyonunu çağır
 }
 </script>
