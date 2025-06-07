@@ -1,6 +1,6 @@
 <template>
-    <div v-if="author">
-        <NuxtLink :to="`/post/${props.post.id}`" class="block p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-dim-800" :class="defaultTransition">
+    <div v-if="author" class="border-b dark:border-gray-700">
+        <NuxtLink :to="`/post/${props.post.id}`" class="block p-4 hover:bg-gray-50 dark:hover:bg-dim-900/50" :class="defaultTransition">
             <div class="flex">
                 <div class="flex-shrink-0 mr-4">
                     <NuxtLink :to="`/profile/${author.username}`" @click.stop>
@@ -16,18 +16,18 @@
                         <p class="text-sm text-gray-500">·</p>
                         <p class="text-sm text-gray-500">{{ timeAgo(props.post.created_at) }}</p>
                     </div>
-                    <p class="mt-2 text-gray-800 dark:text-gray-300">{{ props.post.content }}</p>
-                    <div v-if="props.post.image_url" class="my-3 mr-2 border rounded-2xl dark:border-gray-700">
-                        <img :src="props.post.image_url" class="w-full rounded-2xl" />
+                    <p class="mt-1 text-gray-800 dark:text-gray-300 whitespace-pre-wrap">{{ props.post.content }}</p>
+                    <div v-if="props.post.image_url" class="my-3 border rounded-2xl dark:border-gray-700">
+                        <img :src="props.post.image_url" class="w-full h-auto max-h-96 object-cover rounded-2xl" />
                     </div>
-                    <div class="flex items-center mt-4 space-x-16">
-                        <div class="flex items-center space-x-2 group">
-                            <IconChat class="w-5 h-5 text-gray-500 group-hover:text-blue-400" />
-                            <p class="text-sm text-gray-500 group-hover:text-blue-400">{{ props.post.comments_count }}</p>
+                    <div class="flex items-center mt-3 space-x-20">
+                        <div @click.stop.prevent class="flex items-center text-gray-400 group">
+                             <IconChat class="w-5 h-5 group-hover:text-blue-400" />
+                            <p class="ml-1 text-sm group-hover:text-blue-400">{{ props.post.comments_count }}</p>
                         </div>
-                        <div @click.stop.prevent="handleLike" class="flex items-center space-x-2 group cursor-pointer">
-                            <IconHeart class="w-5 h-5 text-gray-500 group-hover:text-red-400" :class="{'text-red-500': isLiked}" />
-                            <p class="text-sm text-gray-500 group-hover:text-red-400" :class="{'text-red-500': isLiked}">{{ likeCount }}</p>
+                         <div @click.stop.prevent="handleLike" class="flex items-center text-gray-400 group cursor-pointer">
+                             <IconHeart class="w-5 h-5 group-hover:text-red-400" :class="{'fill-current text-red-500': isLiked}" />
+                            <p class="ml-1 text-sm group-hover:text-red-400" :class="{'text-red-500': isLiked}">{{ likeCount }}</p>
                         </div>
                     </div>
                 </div>
