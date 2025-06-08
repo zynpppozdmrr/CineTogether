@@ -1,5 +1,11 @@
 <template>
     <div>
+        <transition name="fade">
+            <div v-if="showNotification" class="fixed top-20 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg z-50">
+                {{ notificationMessage }}
+            </div>
+        </transition>
+
         <div class="sticky top-0 z-10 px-4 py-2 bg-white/80 backdrop-blur-md dark:bg-dim-900/80 border-b dark:border-gray-700">
             <div class="flex items-center">
                 <button @click="router.back()" class="p-2 mr-4 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800">
@@ -9,8 +15,8 @@
             </div>
         </div>
 
-        <div v-if="pending" class="flex items-center justify-center p-8"> <UISpinner /> </div>
-        <div v-else-if="error || !movie" class="p-4 text-center text-red-500"> <p>Could not load movie details.</p> </div>
+        <div v-if="pending" class="flex items-center justify-center p-8"><UISpinner /></div>
+        <div v-else-if="error || !movie" class="p-4 text-center text-red-500"><p>Could not load movie details.</p></div>
 
         <div v-else class="p-4 sm:p-6 lg:p-8">
             <div class="flex flex-col md:flex-row gap-8">
@@ -20,9 +26,7 @@
                 <div class="w-full md:w-2/3 lg:w-3/4">
                     <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ movie.title }} <span class="font-light text-2xl text-gray-400">({{ movie.year }})</span></h1>
                     <div class="flex flex-wrap gap-2 mt-4">
-                        <span v-for="genre in genres" :key="genre" class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-200">
-                            {{ genre }}
-                        </span>
+                        <span v-for="genre in genres" :key="genre" class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-200">{{ genre }}</span>
                     </div>
                     <div class="flex items-center mt-6">
                         <span class="text-yellow-400 text-2xl font-bold">★</span>
@@ -33,14 +37,20 @@
                         <h2 class="text-xl font-semibold dark:text-white mb-2">Plot Summary</h2>
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ movie.description }}</p>
                     </div>
+
                     <div class="flex flex-wrap gap-4 mt-8">
-                        <button class="px-5 py-3 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700">Add to Favorites</button>
+                        <button @click="handleToggleFavorite" :disabled="isActionLoading" class="flex items-center px-5 py-3 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                            :class="isFavorited ? 'bg-pink-600 text-white hover:bg-pink-700' : 'bg-blue-600 text-white hover:bg-blue-700'">
+                            <BookmarkIconSolid v-if="isFavorited" class="w-5 h-5 mr-2" />
+                            <BookmarkIconOutline v-else class="w-5 h-5 mr-2" />
+                            {{ isFavorited ? 'In Favorites' : 'Add to Favorites' }}
+                        </button>
                         <button class="px-5 py-3 text-sm font-semibold text-gray-800 bg-gray-200 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">Add to Watchlist</button>
-                        <a :href="movie.imdb_link" target="_blank" rel="noopener noreferrer" class="px-5 py-3 text-sm font-semibold text-gray-800 bg-yellow-400 rounded-lg hover:bg-yellow-500">
+                        <a :href="movie.imdb_link" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-3 text-sm font-semibold text-gray-800 bg-yellow-400 rounded-lg hover:bg-yellow-500">
                             View on IMDb
                         </a>
                     </div>
-                </div>
+                    </div>
             </div>
         </div>
     </div>
@@ -48,20 +58,83 @@
 
 <script setup>
 import UISpinner from '~/components/UI/Spinner.vue';
+import { useFavorites } from '~/composables/useFavorites.js';
+import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/vue/outline';
+import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/vue/solid';
 
 const route = useRoute();
 const router = useRouter();
 const movieId = route.params.id;
+const { useAuthUser } = useAuth();
+const { addFavorite, removeFavorite } = useFavorites();
+const user = useAuthUser();
 
-const { data: movie, pending, error } = await useAsyncData(
-    `movie-${movieId}`,
-    () => $fetch(`/api/movies/${movieId}`, { baseURL: 'http://127.0.0.1:5000' }).then(res => res.movie)
+// State for button loading and notifications
+const isActionLoading = ref(false);
+const notificationMessage = ref('');
+const showNotification = ref(false);
+let notificationTimer = null;
+
+// Fetch movie details and user's favorites list
+const { data, pending, error } = await useAsyncData(
+    `movie-data-${movieId}`,
+    async () => {
+        const movieRes = await $fetch(`/api/movies/${movieId}`, { baseURL: 'http://127.0.0.1:5000' });
+        if (!user.value) {
+            return { movie: movieRes.movie, favorites: [] };
+        }
+        const favoritesRes = await $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' });
+        return {
+            movie: movieRes.movie,
+            favorites: favoritesRes.favorites || []
+        };
+    }
 );
 
-const genres = computed(() => {
-    if (movie.value?.genre) {
-        return movie.value.genre.split(',').map(g => g.trim());
-    }
-    return [];
+// Reactive state from fetched data
+const movie = computed(() => data.value?.movie);
+const favorites = ref(data.value?.favorites || []);
+const genres = computed(() => movie.value?.genre ? movie.value.genre.split(',').map(g => g.trim()) : []);
+
+// Computed property to check if the movie is in favorites
+const isFavorited = computed(() => {
+    return favorites.value.some(fav => fav.movie_id === movie.value.id);
 });
+
+// Function to toggle favorite status
+async function handleToggleFavorite() {
+    isActionLoading.value = true;
+    try {
+        if (isFavorited.value) {
+            await removeFavorite(movie.value.id);
+            const index = favorites.value.findIndex(fav => fav.movie_id === movie.value.id);
+            if (index !== -1) favorites.value.splice(index, 1);
+            triggerNotification(`'${movie.value.title}' removed from favorites.`);
+        } else {
+            await addFavorite(movie.value.id);
+            favorites.value.push({ movie_id: movie.value.id });
+            triggerNotification(`'${movie.value.title}' added to favorites!`);
+        }
+    } catch (e) {
+        console.error(e);
+        alert('An error occurred.');
+    } finally {
+        isActionLoading.value = false;
+    }
+}
+
+// Function to show notification
+function triggerNotification(message) {
+    notificationMessage.value = message;
+    showNotification.value = true;
+    if (notificationTimer) clearTimeout(notificationTimer);
+    notificationTimer = setTimeout(() => {
+        showNotification.value = false;
+    }, 3000);
+}
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: all 0.5s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(-20px); }
+</style>
