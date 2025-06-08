@@ -64,7 +64,14 @@
                             <BookmarkIconOutline v-else class="w-5 h-5 mr-2" />
                             {{ isFavorited ? 'In Favorites' : 'Add to Favorites' }}
                         </button>
-                        <button class="px-5 py-3 text-sm font-semibold text-gray-800 bg-gray-200 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">Add to Watchlist</button>
+                        
+                        <button @click="handleToggleWatchlist" :disabled="isActionLoading" class="flex items-center px-5 py-3 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                            :class="isOnWatchlist ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600'">
+                            <EyeIcon v-if="isOnWatchlist" class="w-5 h-5 mr-2" />
+                            <PlusIcon v-else class="w-5 h-5 mr-2" />
+                            {{ isOnWatchlist ? 'On Watchlist' : 'Add to Watchlist' }}
+                        </button>
+
                         <a :href="movie.imdb_link" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-3 text-sm font-semibold text-gray-800 bg-yellow-400 rounded-lg hover:bg-yellow-500">
                             View on IMDb
                         </a>
@@ -81,14 +88,16 @@
 import UISpinner from '~/components/UI/Spinner.vue';
 import MovieRating from '~/components/Movie/Rating.vue';
 import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/vue/outline';
-import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/vue/solid';
+import { BookmarkIcon as BookmarkIconSolid,EyeIcon,PlusIcon } from '@heroicons/vue/solid';
 import { useFavorites } from '~/composables/useFavorites.js';
+import { useWatchlist } from '~/composables/useWatchlist.js';
 
 const route = useRoute();
 const router = useRouter();
 const movieId = route.params.id;
 const { useAuthUser } = useAuth();
 const { addFavorite, removeFavorite } = useFavorites();
+const { addToWatchlist, removeFromWatchlist } = useWatchlist(); // Yeni fonksiyonları al
 const user = useAuthUser();
 
 const isActionLoading = ref(false);
@@ -102,24 +111,39 @@ const { data, pending, error, refresh } = await useAsyncData(
     async () => {
         try {
             const movieRes = await $fetch(`/api/movies/${movieId}`, { baseURL: 'http://127.0.0.1:5000' });
-            const movieData = movieRes.movie;
-            if (!movieData) throw new Error("Movie not found");
+            if (!movieRes.movie) throw new Error("Movie not found");
 
-            const [favoritesRes, ratingsRes, avgRatingRes] = await Promise.all([
-                user.value ? $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }) : Promise.resolve({ favorites: [] }),
-                user.value ? $fetch(`/api/ratings/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }) : Promise.resolve({ watch_history: [] }),
-                $fetch(`/api/ratings/movie/${movieId}/average`, { baseURL: 'http://127.0.0.1:5000' })
+            // Fetch average rating for the movie
+            const avgRatingRes = await $fetch(`/api/ratings/movie/${movieId}/average`, { baseURL: 'http://127.0.0.1:5000' });
+
+            // If user is not logged in, return public data
+            if (!user.value) {
+                return { 
+                    movie: movieRes.movie, 
+                    favorites: [], 
+                    userRatings: [], 
+                    watchlist: [],
+                    averageRating: avgRatingRes.average_rating || 0
+                };
+            }
+
+            // If user is logged in, fetch their specific data
+            const [favoritesRes, ratingsRes, watchlistRes] = await Promise.all([
+                $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
+                $fetch(`/api/ratings/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
+                $fetch(`/api/watchlists/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' })
             ]);
 
             return {
-                movie: movieData,
+                movie: movieRes.movie,
                 favorites: favoritesRes.favorites || [],
                 userRatings: ratingsRes.watch_history || [],
+                watchlist: watchlistRes.watchlist || [],
                 averageRating: avgRatingRes.average_rating || 0
             };
         } catch (e) {
             console.error(e);
-            return { movie: null, favorites: [], userRatings: [], averageRating: 0 };
+            return { movie: null, favorites: [], userRatings: [], watchlist: [], averageRating: 0 };
         }
     }
 );
@@ -127,6 +151,7 @@ const { data, pending, error, refresh } = await useAsyncData(
 // Verileri güvenli bir şekilde kullanmak için computed değişkenler
 const movie = computed(() => data.value?.movie);
 const favorites = ref(data.value?.favorites || []);
+const watchlist = ref(data.value?.watchlist || []); // watchlist verisini reaktif yap
 const averageRating = computed(() => data.value?.averageRating);
 const genres = computed(() => movie.value?.genre ? movie.value.genre.split(',').map(g => g.trim()) : []);
 
@@ -139,6 +164,13 @@ const isFavorited = computed(() => {
     if (!movie.value) return false;
     return favorites.value.some(fav => fav.movie_id === movie.value.id);
 });
+
+// YENİ: Filmin izleme listesinde olup olmadığını kontrol et
+const isOnWatchlist = computed(() => {
+    if (!movie.value) return false;
+    return watchlist.value.some(item => item.movie_id === movie.value.id);
+});
+
 
 // Favori ekleme/çıkarma fonksiyonu
 async function handleToggleFavorite() {
@@ -157,6 +189,24 @@ async function handleToggleFavorite() {
     } catch (e) { console.error(e); } finally {
         isActionLoading.value = false;
     }
+}
+
+// YENİ: İzleme listesi butonunun fonksiyonu
+async function handleToggleWatchlist() {
+    isActionLoading.value = true;
+    try {
+        if (isOnWatchlist.value) {
+            await removeFromWatchlist(movie.value.id);
+            const index = watchlist.value.findIndex(item => item.movie_id === movie.value.id);
+            if (index !== -1) watchlist.value.splice(index, 1);
+            triggerNotification(`'${movie.value.title}' removed from watchlist.`);
+        } else {
+            await addToWatchlist(movie.value.id);
+            watchlist.value.push({ movie_id: movie.value.id });
+            triggerNotification(`'${movie.value.title}' added to watchlist!`);
+        }
+    } catch (e) { console.error(e); }
+    finally { isActionLoading.value = false; }
 }
 
 // Bildirim gösterme fonksiyonu
