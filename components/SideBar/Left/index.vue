@@ -69,6 +69,19 @@
           <MenuItems class="absolute bottom-full mb-2 w-64 origin-bottom-left rounded-2xl bg-white dark:bg-dim-700 shadow-lg ring-1 ring-black/5 focus:outline-none">
             <div class="p-1">
               <MenuItem v-slot="{ active }">
+                <button @click="toggleTheme" :class="[active ? 'bg-gray-100 dark:bg-dim-800' : '', 'group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold text-gray-900 dark:text-white']">
+                  <template v-if="isDarkMode">
+                    <SunIcon class="w-5 h-5 mr-2" />
+                    <span>Light Mode</span>
+                  </template>
+                  <template v-else>
+                    <MoonIcon class="w-5 h-5 mr-2" />
+                    <span>Dark Mode</span>
+                  </template>
+                </button>
+              </MenuItem>
+
+              <MenuItem v-slot="{ active }">                
                 <button @click="handleLogout" :class="[active ? 'bg-gray-100 dark:bg-dim-800' : '', 'group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold text-gray-900 dark:text-white']">
                   <LogoutIcon class="w-5 h-5 mr-2" aria-hidden="true" />
                   Log out @{{ user.username }}
@@ -91,7 +104,9 @@ import {
   FilmIcon as FilmIconOutline,
   UsersIcon as UsersIconOutline, // Yeni ikon
   LogoutIcon ,
-  ViewListIcon as ViewListIconOutline
+  ViewListIcon as ViewListIconOutline,
+  MoonIcon, 
+  SunIcon
 } from '@heroicons/vue/outline'
 import { 
   HomeIcon as HomeIconSolid, 
@@ -104,7 +119,7 @@ import {
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 
 
-
+import { useTheme } from '~/composables/useTheme'; // Tema yardımcısını import et
 // Diğer component ve fonksiyonları import ediyoruz
 import SidebarLeftTab from './Tab.vue';
 import { useRoute } from 'vue-router';
@@ -112,6 +127,8 @@ const { useAuthUser, logout } = useAuth();
 const user = useAuthUser();
 const { defaultTransition } = useTailwindConfig();
 const route = useRoute();
+const { isDarkMode, toggleTheme } = useTheme(); // Tema fonksiyonlarını al
+
 
 const isActive = (path) => route.path === path;
 const profile = { name: 'Profile', to: `/profile/${user.value?.username}` };
