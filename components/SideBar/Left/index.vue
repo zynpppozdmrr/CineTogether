@@ -26,10 +26,10 @@
       </SidebarLeftTab>
 
       <SidebarLeftTab to="/lists" :active="isActive('/lists')">
-        <template v-slot:icon><BookmarkIconOutline /></template>
-        <template v-slot:activeIcon><BookmarkIconSolid /></template>
-        <template v-slot:name>My Lists</template>
-      </SidebarLeftTab>
+            <template v-slot:icon><ViewListIconOutline /></template>
+            <template v-slot:activeIcon><ViewListIconSolid /></template>
+            <template v-slot:name>My Lists</template>
+        </SidebarLeftTab>
 
       <SidebarLeftTab :to="profile.to" :active="isActive(profile.to)">
         <template v-slot:icon><UserIconOutline /></template>
@@ -90,14 +90,16 @@ import {
   BookmarkIcon as BookmarkIconOutline, 
   FilmIcon as FilmIconOutline,
   UsersIcon as UsersIconOutline, // Yeni ikon
-  LogoutIcon 
+  LogoutIcon ,
+  ViewListIcon as ViewListIconOutline
 } from '@heroicons/vue/outline'
 import { 
   HomeIcon as HomeIconSolid, 
   UserIcon as UserIconSolid, 
   BookmarkIcon as BookmarkIconSolid, 
   FilmIcon as FilmIconSolid,
-  UsersIcon as UsersIconSolid // Yeni ikon (solid)
+  UsersIcon as UsersIconSolid, // Yeni ikon (solid)
+  ViewListIcon as ViewListIconSolid
 } from '@heroicons/vue/solid'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 

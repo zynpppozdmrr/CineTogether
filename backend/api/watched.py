@@ -69,6 +69,7 @@ def get_user_watched(user_id):
                     "year": movie.year,
                     "genre": movie.genre,
                     "image": movie.image,
+                    "rating":movie.rating,
                     "watched_at": entry.watched_at
                 })
 

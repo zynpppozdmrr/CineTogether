@@ -68,6 +68,7 @@ def get_user_watchlist(user_id):
                     "year": movie.year,
                     "genre": movie.genre,
                     "image": movie.image,
+                    "rating":movie.rating,
                     "added_at": entry.added_at
                 })
 
