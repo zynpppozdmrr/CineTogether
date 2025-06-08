@@ -1,9 +1,6 @@
 <template>
     <div>
-        <div class="sticky top-0 z-10 px-4 py-2 bg-white/80 backdrop-blur-md dark:bg-dim-900/80 border-b dark:border-gray-700">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-white">My Lists</h2>
-        </div>
-
+        
         <div class="flex border-b border-gray-200 dark:border-gray-700">
             <button @click="selectedTab = 'watchlist'" :class="tabClass('watchlist')" class="flex-1 p-3 font-semibold text-center hover:bg-gray-100 dark:hover:bg-dim-800 transition-colors">
                 My Watchlist

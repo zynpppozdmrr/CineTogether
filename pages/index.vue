@@ -1,9 +1,5 @@
 <template>
     <div>
-        <div class="sticky top-0 px-4 py-3 bg-white/80 backdrop-blur-md dark:bg-dim-900/80">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Home</h2>
-        </div>
-
         <PostForm v-if="user && user.role === 'admin'" @on-success="handleFormSuccess" />
 
         <div v-if="loading" class="flex items-center justify-center p-4 border-b" :class="twitterBorderColor">

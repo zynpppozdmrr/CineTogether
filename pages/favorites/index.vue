@@ -1,8 +1,6 @@
 <template>
     <div>
-        <div class="sticky top-0 z-10 px-4 py-2 bg-white/80 backdrop-blur-md dark:bg-dim-900/80 border-b dark:border-gray-700">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-white">My Favorite Movies</h2>
-        </div>
+        
 
         <div v-if="pending" class="flex items-center justify-center p-8">
             <UISpinner />

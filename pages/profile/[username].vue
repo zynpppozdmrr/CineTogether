@@ -1,37 +1,6 @@
 <template>
   <div>
-    <div
-      class="sticky top-0 z-10 px-4 py-2 bg-white/80 backdrop-blur-md dark:bg-dim-900/80 border-b dark:border-gray-700"
-    >
-      <div class="flex items-center">
-        <button
-          @click="router.back()"
-          class="p-2 mr-4 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            ></path>
-          </svg>
-        </button>
-
-        <div v-if="profileUser">
-          <h2 class="text-lg font-bold">{{ profileUser.full_name }}</h2>
-
-          <p v-if="posts" class="text-sm text-gray-500">
-            {{ posts.length }} Posts
-          </p>
-        </div>
-      </div>
-    </div>
+   
 
     <div v-if="pending" class="flex items-center justify-center p-8">
       <UISpinner />
