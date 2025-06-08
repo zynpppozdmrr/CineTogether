@@ -23,41 +23,41 @@
             <p>Could not load movie details.</p>
         </div>
 
-        <div v-else class="p-4 sm:p-6 lg:p-8">
-            <div class="flex flex-col md:flex-row gap-8">
+        <div v-else class="p-4 sm:p-6">
+            <div class="flex flex-row gap-4 sm:gap-6">
                 
-                <div class="w-full md:w-1/3 lg:w-1/4">
+                <div class="w-1/3 flex-shrink-0">
                     <img :src="movie.image" :alt="movie.title" class="rounded-lg shadow-2xl w-full">
                 </div>
                 
-                <div class="w-full md:w-2/3 lg:w-3/4">
-                    <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ movie.title }} <span class="font-light text-2xl text-gray-400">({{ movie.year }})</span></h1>
+                <div class="w-2/3">
+                    <h1 class="text-xl sm:text-2xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ movie.title }} <span class="font-light text-lg md:text-2xl text-gray-400">({{ movie.year }})</span></h1>
                     
-                    <div class="flex flex-wrap gap-2 mt-4">
-                        <span v-for="genre in genres" :key="genre" class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-200">
+                    <div class="flex flex-wrap gap-1 sm:gap-2 mt-2 sm:mt-4">
+                        <span v-for="genre in genres" :key="genre" class="px-2 py-0.5 text-[10px] sm:text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-200">
                             {{ genre }}
                         </span>
                     </div>
 
-                    <div class="flex items-center mt-6 space-x-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center mt-3 sm:mt-6 sm:space-x-4">
                         <div class="flex items-center">
-                            <span class="text-yellow-400 text-2xl font-bold">★</span>
-                            <span class="ml-2 text-2xl font-bold text-gray-800 dark:text-white">{{ movie.rating }}</span>
-                            <span class="ml-1 text-sm text-gray-500">/ 10 IMDb</span>
+                            <span class="text-yellow-400 text-lg sm:text-2xl font-bold">★</span>
+                            <span class="ml-2 text-lg sm:text-2xl font-bold text-gray-800 dark:text-white">{{ movie.rating }}</span>
+                            <span class="ml-1 text-xs sm:text-sm text-gray-500">/ 10 IMDb</span>
                         </div>
-                        <div v-if="averageRating > 0" class="flex items-center">
-                            <span class="text-blue-400 text-2xl font-bold">♥</span>
-                            <span class="ml-2 text-2xl font-bold text-gray-800 dark:text-white">{{ averageRating }}</span>
-                            <span class="ml-1 text-sm text-gray-500">/ 10 CineTogether</span>
+                        <div v-if="averageRating > 0" class="flex items-center mt-1 sm:mt-0">
+                            <span class="text-blue-400 text-lg sm:text-2xl font-bold">♥</span>
+                            <span class="ml-2 text-lg sm:text-2xl font-bold text-gray-800 dark:text-white">{{ averageRating }}</span>
+                            <span class="ml-1 text-xs sm:text-sm text-gray-500">/ 10</span>
                         </div>
                     </div>
 
-                    <div class="mt-6">
-                        <h2 class="text-xl font-semibold dark:text-white mb-2">Plot Summary</h2>
-                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ movie.description }}</p>
+                    <div class="mt-4">
+                        <h2 class="text-lg sm:text-xl font-semibold dark:text-white mb-1 sm:mb-2">Plot Summary</h2>
+                        <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ movie.description }}</p>
                     </div>
 
-                    <div class="flex flex-wrap gap-4 mt-8">
+                    <div class="flex flex-wrap gap-2 sm:gap-4 mt-4 sm:mt-8">
                         <button @click="handleToggleFavorite" :disabled="isActionLoading" class="flex items-center px-5 py-3 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
                             :class="isFavorited ? 'bg-pink-600 text-white hover:bg-pink-700' : 'bg-blue-600 text-white hover:bg-blue-700'">
                             <BookmarkIconSolid v-if="isFavorited" class="w-5 h-5 mr-2" />
