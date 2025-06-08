@@ -111,3 +111,78 @@ def get_user_ratings(user_id):
     except Exception as e:
         print("ERROR in get_user_ratings:", e)
         return jsonify({"success": False, "message": "Internal server error"}), 500
+
+
+# ------------------ Kullanıcının puanını güncelle ------------------
+
+@apiRatings.route("/update", methods=["PUT"])
+@jwt_required()
+def update_rating():
+    try:
+        user_id = get_jwt_identity()
+       
+
+        movie_id = request.form.get("movie_id")
+        rating = request.form.get("rating")
+        comment = request.form.get("comment")
+
+        if not movie_id:
+            return jsonify({"success": False, "message": "movie_id is required"}), 400
+
+        if rating is not None:
+            try:
+                rating = float(rating)
+                if rating < 1 or rating > 10:
+                    return jsonify({"success": False, "message": "Rating must be between 1 and 10"}), 400
+            except ValueError:
+                return jsonify({"success": False, "message": "Rating must be a number"}), 400
+
+        updated_rating = Rating.update_rating_by_user(
+            user_id=user_id,
+            movie_id=movie_id,
+            rating=rating,
+            comment=comment
+        )
+
+        if not updated_rating:
+            return jsonify({"success": False, "message": "No existing rating found to update"}), 404
+
+        return jsonify({
+            "success": True,
+            "message": "Rating updated",
+            "rating": {
+                "rating_id": updated_rating.id,
+                "movie_id": updated_rating.movie_id,
+                "user_id": updated_rating.user_id,
+                "rating": updated_rating.rating,
+                "comment": updated_rating.comment
+            }
+        }), 200
+
+    except Exception as e:
+        print("ERROR in update_rating:", e)
+        return jsonify({"success": False, "message": "Internal server error"}), 500
+
+
+# ------------------ Kullanıcının puanını sil ------------------
+
+@apiRatings.route("/delete", methods=["DELETE"])
+@jwt_required()
+def delete_rating():
+    try:
+        user_id = get_jwt_identity()
+        movie_id = request.form.get("movie_id")
+
+        if not movie_id:
+            return jsonify({"success": False, "message": "movie_id is required"}), 400
+
+        deleted = Rating.delete_rating_by_user(user_id=user_id, movie_id=movie_id)
+
+        if not deleted:
+            return jsonify({"success": False, "message": "No existing rating found to delete"}), 404
+
+        return jsonify({"success": True, "message": "Rating deleted"}), 200
+
+    except Exception as e:
+        print("ERROR in delete_rating:", e)
+        return jsonify({"success": False, "message": "Internal server error"}), 500

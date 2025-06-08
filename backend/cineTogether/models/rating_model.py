@@ -44,3 +44,29 @@ class Rating(db.Model):
         from sqlalchemy import func
         avg = db.session.query(func.avg(cls.rating)).filter_by(movie_id=movie_id).scalar()
         return round(avg, 2) if avg else 0.0
+    
+    @classmethod
+    def update_rating_by_user(cls, user_id, movie_id, rating=None, comment=None):
+        rating_obj = cls.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+        if not rating_obj:
+            return None  # Rating bulunamadı
+
+        if rating is not None:
+            rating_obj.rating = rating
+        if comment is not None:
+            rating_obj.comment = comment
+
+        db.session.commit()
+        return rating_obj
+
+
+    @classmethod
+    def delete_rating_by_user(cls, user_id, movie_id):
+        rating_obj = cls.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+        if not rating_obj:
+            return None  # Rating bulunamadı
+
+        db.session.delete(rating_obj)
+        db.session.commit()
+        return True
+
