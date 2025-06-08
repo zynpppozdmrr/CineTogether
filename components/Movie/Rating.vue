@@ -3,28 +3,25 @@
         <h3 class="text-lg font-semibold dark:text-white">Your Rating</h3>
 
         <div 
-            class="flex items-center mt-4" 
+            class="flex items-center mt-4 flex-wrap gap-x-1 gap-y-2"
             @mouseleave="handleMouseLeave"
-            :class="{ 'pointer-events-none opacity-70': isSubmitting || currentUserRating }"
+            :class="{ 'opacity-70': isSubmitting }"
         >
             <div 
                 v-for="star in 10" 
                 :key="star" 
-                @mousemove="handleStarHover(star, $event)"
-                @click="submitRating" 
-                class="relative cursor-pointer w-7 h-7"
+                @mouseover="hoverRating = star" 
+                @click="handleStarClick(star)" 
+                class="cursor-pointer"
             >
-                <StarIconSolid class="w-7 h-7 text-gray-300 dark:text-gray-600" />
-                <div class="absolute top-0 left-0 h-full overflow-hidden" :style="{ width: getStarWidth(star) }">
-                    <StarIconSolid class="w-7 h-7 text-yellow-400 absolute top-0 left-0" />
-                </div>
+                <StarIconSolid class="w-7 h-7 transition-colors" :class="starClass(star)" />
             </div>
 
             <div class="ml-4">
                 <span class="font-bold text-lg dark:text-white">
                     {{ displayedRating }} / 10
                 </span>
-                <p v-if="currentUserRating" class="text-xs text-gray-500">(You have already rated)</p>
+                <p v-if="currentUserRating" class="text-xs text-gray-500">(Click a star to change your rating)</p>
             </div>
         </div>
     </div>
@@ -40,59 +37,48 @@ const props = defineProps({
 });
 const emits = defineEmits(['onSuccess']);
 
-const { addRating } = useRatings();
-
-// Reaktif değişkenler
+const { addRating, updateRating } = useRatings();
 const hoverRating = ref(0);
-const finalRating = ref(props.currentUserRating?.user_rating || 0);
 const isSubmitting = ref(false);
 
-// Ekranda gösterilecek puanı hesaplayan computed property
-const displayedRating = computed(() => hoverRating.value || finalRating.value);
+const displayedRating = computed(() => {
+    // If hovering, show hover rating. Otherwise, show the saved rating.
+    return hoverRating.value || props.currentUserRating?.user_rating || 0;
+});
 
-// Bir yıldızın ne kadarının sarı olacağını hesaplar (% olarak)
-const getStarWidth = (star) => {
-    const rating = displayedRating.value;
-    if (star <= rating) {
-        return '100%'; // Tam yıldız
-    }
-    if (star === Math.ceil(rating) && rating % 1 !== 0) {
-        return '50%'; // Yarım yıldız
-    }
-    return '0%'; // Boş yıldız
+const starClass = (star) => {
+    return star <= displayedRating.value ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600';
 };
 
-// Fare yıldızların üzerindeyken hover puanını hesaplar
-const handleStarHover = (star, event) => {
-    if (props.currentUserRating) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const isHalf = event.clientX - rect.left < rect.width / 2;
-    hoverRating.value = star - (isHalf ? 0.5 : 0);
-};
-
-// Fare yıldızların üzerinden çekildiğinde hover'ı sıfırlar
 const handleMouseLeave = () => {
     hoverRating.value = 0;
 };
 
-// Bir yıldıza tıklandığında puanı gönderir
-async function submitRating() {
-    if (isSubmitting.value || props.currentUserRating || hoverRating.value === 0) return;
+async function handleStarClick(newRating) {
+    if (isSubmitting.value) return;
     
     isSubmitting.value = true;
-    finalRating.value = hoverRating.value; // Seçilen puanı kalıcı yap
-
     try {
-        await addRating({
-            movieId: props.movieId,
-            rating: finalRating.value,
-            comment: null
-        });
-        emits('onSuccess');
+        // If a rating already exists, update it.
+        if (props.currentUserRating) {
+            await updateRating({
+                movieId: props.movieId,
+                rating: newRating,
+                comment: props.currentUserRating.comment // Keep the old comment for now
+            });
+        } 
+        // Otherwise, add a new one.
+        else {
+            await addRating({
+                movieId: props.movieId,
+                rating: newRating,
+                comment: null
+            });
+        }
+        emits('onSuccess'); // Refresh the page to show the definitive new state
     } catch (error) {
         console.error("Failed to submit rating:", error);
-        alert('An error occurred. You may have already rated this movie.');
-        finalRating.value = 0; // Hata durumunda puanı sıfırla
+        alert('An error occurred while submitting your rating.');
     } finally {
         isSubmitting.value = false;
     }
