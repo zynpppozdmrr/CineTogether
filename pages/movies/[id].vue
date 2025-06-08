@@ -48,7 +48,7 @@
                         <div v-if="averageRating > 0" class="flex items-center mt-1 sm:mt-0">
                             <span class="text-blue-400 text-lg sm:text-2xl font-bold">♥</span>
                             <span class="ml-2 text-lg sm:text-2xl font-bold text-gray-800 dark:text-white">{{ averageRating }}</span>
-                            <span class="ml-1 text-xs sm:text-sm text-gray-500">/ 10</span>
+                            <span class="ml-1 text-xs sm:text-sm text-gray-500">/ 10 CineTogether</span>
                         </div>
                     </div>
 
@@ -72,6 +72,13 @@
                             {{ isOnWatchlist ? 'On Watchlist' : 'Add to Watchlist' }}
                         </button>
 
+                        <button @click="handleToggleWatched" :disabled="isActionLoading" class="flex items-center px-5 py-3 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                            :class="isWatched ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600'">
+                            <CheckCircleIcon v-if="isWatched" class="w-5 h-5 mr-2" />
+                            <PlusCircleIcon v-else class="w-5 h-5 mr-2" />
+                            {{ isWatched ? 'Watched' : 'Mark as Watched' }}
+                        </button>
+
                         <a :href="movie.imdb_link" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-3 text-sm font-semibold text-gray-800 bg-yellow-400 rounded-lg hover:bg-yellow-500">
                             View on IMDb
                         </a>
@@ -87,17 +94,19 @@
 <script setup>
 import UISpinner from '~/components/UI/Spinner.vue';
 import MovieRating from '~/components/Movie/Rating.vue';
-import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/vue/outline';
-import { BookmarkIcon as BookmarkIconSolid,EyeIcon,PlusIcon } from '@heroicons/vue/solid';
+import { BookmarkIcon as BookmarkIconOutline,PlusCircleIcon } from '@heroicons/vue/outline';
+import { BookmarkIcon as BookmarkIconSolid,EyeIcon,PlusIcon, CheckCircleIcon } from '@heroicons/vue/solid';
 import { useFavorites } from '~/composables/useFavorites.js';
 import { useWatchlist } from '~/composables/useWatchlist.js';
+import { useWatched } from '~/composables/useWatched.js' 
 
 const route = useRoute();
 const router = useRouter();
 const movieId = route.params.id;
 const { useAuthUser } = useAuth();
 const { addFavorite, removeFavorite } = useFavorites();
-const { addToWatchlist, removeFromWatchlist } = useWatchlist(); // Yeni fonksiyonları al
+const { addToWatchlist, removeFromWatchlist } = useWatchlist();
+const { markAsWatched, removeFromWatched } = useWatched(); 
 const user = useAuthUser();
 
 const isActionLoading = ref(false);
@@ -123,22 +132,26 @@ const { data, pending, error, refresh } = await useAsyncData(
                     favorites: [], 
                     userRatings: [], 
                     watchlist: [],
+                    watched: [],
                     averageRating: avgRatingRes.average_rating || 0
                 };
             }
 
             // If user is logged in, fetch their specific data
-            const [favoritesRes, ratingsRes, watchlistRes] = await Promise.all([
+            const [favoritesRes, ratingsRes, watchlistRes,watchedRes] = await Promise.all([
                 $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
                 $fetch(`/api/ratings/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
-                $fetch(`/api/watchlists/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' })
+                $fetch(`/api/watchlists/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
+                $fetch(`/api/watched/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' })
             ]);
+
 
             return {
                 movie: movieRes.movie,
                 favorites: favoritesRes.favorites || [],
                 userRatings: ratingsRes.watch_history || [],
                 watchlist: watchlistRes.watchlist || [],
+                watched: watchedRes.watched || [], 
                 averageRating: avgRatingRes.average_rating || 0
             };
         } catch (e) {
@@ -154,6 +167,7 @@ const favorites = ref(data.value?.favorites || []);
 const watchlist = ref(data.value?.watchlist || []); // watchlist verisini reaktif yap
 const averageRating = computed(() => data.value?.averageRating);
 const genres = computed(() => movie.value?.genre ? movie.value.genre.split(',').map(g => g.trim()) : []);
+const watched = ref(data.value?.watched || []);
 
 const currentUserRating = computed(() => {
     if (!data.value?.userRatings) return null;
@@ -171,6 +185,11 @@ const isOnWatchlist = computed(() => {
     return watchlist.value.some(item => item.movie_id === movie.value.id);
 });
 
+// YENİ: Filmin izlenenler listesinde olup olmadığını kontrol et
+const isWatched = computed(() => {
+    if (!movie.value) return false;
+    return watched.value.some(item => item.movie_id === movie.value.id);
+});
 
 // Favori ekleme/çıkarma fonksiyonu
 async function handleToggleFavorite() {
@@ -204,6 +223,24 @@ async function handleToggleWatchlist() {
             await addToWatchlist(movie.value.id);
             watchlist.value.push({ movie_id: movie.value.id });
             triggerNotification(`'${movie.value.title}' added to watchlist!`);
+        }
+    } catch (e) { console.error(e); }
+    finally { isActionLoading.value = false; }
+}
+
+// YENİ: İzlenenler listesi butonunun fonksiyonu
+async function handleToggleWatched() {
+    isActionLoading.value = true;
+    try {
+        if (isWatched.value) {
+            await removeFromWatched(movie.value.id);
+            const index = watched.value.findIndex(item => item.movie_id === movie.value.id);
+            if (index !== -1) watched.value.splice(index, 1);
+            triggerNotification(`'${movie.value.title}' removed from watched list.`);
+        } else {
+            await markAsWatched(movie.value.id);
+            watched.value.push({ movie_id: movie.value.id });
+            triggerNotification(`'${movie.value.title}' marked as watched!`);
         }
     } catch (e) { console.error(e); }
     finally { isActionLoading.value = false; }
