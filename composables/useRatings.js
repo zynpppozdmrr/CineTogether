@@ -7,9 +7,8 @@ export const useRatings = () => {
         const formData = new FormData();
         formData.append('movie_id', movieId);
         formData.append('rating', rating);
-        if (comment) {
-            formData.append('comment', comment);
-        }
+        if (comment) formData.append('comment', comment);
+        
         return $fetch('/api/ratings/', {
             method: 'POST',
             body: formData,
@@ -18,16 +17,12 @@ export const useRatings = () => {
         });
     }
 
-    // ================ YENİ FONKSİYONLAR ================
     const updateRating = ({ movieId, rating, comment }) => {
         const formData = new FormData();
         formData.append('movie_id', movieId);
-        if (rating) {
-            formData.append('rating', rating);
-        }
-        if (comment) {
-            formData.append('comment', comment);
-        }
+        if (rating) formData.append('rating', rating);
+        if (comment) formData.append('comment', comment);
+        
         return $fetch('/api/ratings/update', {
             method: 'PUT',
             body: formData,
@@ -36,9 +31,11 @@ export const useRatings = () => {
         });
     }
 
+    // ================ YENİ FONKSİYON ================
     const deleteRating = (movieId) => {
         const formData = new FormData();
         formData.append('movie_id', movieId);
+        
         return $fetch('/api/ratings/delete', {
             method: 'DELETE',
             body: formData,
@@ -46,11 +43,11 @@ export const useRatings = () => {
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }
-    // =======================================================
+    // ===============================================
 
     return {
         addRating,
         updateRating,
-        deleteRating
+        deleteRating // Yeni fonksiyonu dışarıya açıyoruz
     }
 }
