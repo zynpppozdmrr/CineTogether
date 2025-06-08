@@ -9,7 +9,7 @@
       </div>
       <input 
         v-model="search"
-        class="flex items-center w-full pl-12 text-sm font-normal text-black bg-gray-200 border border-gray-200 rounded-full shadow dark:text-gray-100 dark:bg-dim-400 dark:border-dim-400 focus:bg-gray-100 dark:focus:bg-dim-900 focus:outline-none focus:border focus:border-blue-200 h-9"
+        class="flex items-center w-full pl-12 text-sm font-normal text-black bg-gray-200 border border-gray-200 rounded-full shadow dark:text-gray-100 dark:bg-dim-400 dark:border-dim-400 focus:bg-gray-100 dark:focus:bg-dim-900 focus:outline-none focus:border focus:border-purple-200 h-9"
         placeholder="Search Movies..." 
         type="text"
       >
@@ -63,7 +63,7 @@
             Add movies to your favorites to get personalized recommendations.
         </div>
         
-         <div v-if="recommendations && recommendations.length > 3" @click="showAllRecommendations = !showAllRecommendations" class="p-3 text-sm text-blue-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-dim-300 rounded-b-2xl text-center">
+         <div v-if="recommendations && recommendations.length > 3" @click="showAllRecommendations = !showAllRecommendations" class="p-3 text-sm text-purple-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-dim-300 rounded-b-2xl text-center">
             {{ showAllRecommendations ? 'Show less' : 'Show more' }}
         </div>
     </div>
