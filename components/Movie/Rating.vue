@@ -23,7 +23,7 @@
 
             <div v-if="currentUserRating" class="ml-4 flex items-center space-x-4">
                 <div>
-                    <span class="font-bold text-lg dark:text-white">{{ displayedRating.toFixed(1) }} / 10</span>
+                    <span class="font-bold text-lg dark:text-white">{{ formatRating(displayedRating) }} / 10</span>
                     <p v-if="currentUserRating" class="text-xs text-gray-500">(Click a star to change your rating)</p>
                 </div>
                 <button v-if="currentUserRating" @click="handleDeleteRating" :disabled="isSubmitting" class="p-2 rounded-full text-gray-400 hover:bg-red-100 hover:text-red-500 dark:hover:bg-red-500/20">
@@ -51,6 +51,15 @@ const isSubmitting = ref(false);
 const displayedRating = computed(() => {
     return hoverRating.value || props.currentUserRating?.user_rating || 0;
 });
+
+const formatRating = (rating) => {
+    // Eğer sayı tamsayı ise (örneğin 10.0), ondalık kısmı at
+    if (rating % 1 === 0) {
+        return rating.toFixed(0); // "10" olarak döner
+    }
+    // Değilse (örneğin 8.5), bir ondalık basamakla göster
+    return rating.toFixed(1); // "8.5" olarak döner
+};
 
 // Yıldızın doluluk oranını (%0, %50, %100) hesaplayan fonksiyon
 const getStarWidth = (star) => {
