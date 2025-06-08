@@ -5,7 +5,7 @@
                 {{ notificationMessage }}
             </div>
         </transition>
-
+        
         <div class="sticky top-0 z-10 px-4 py-2 bg-white/80 backdrop-blur-md dark:bg-dim-900/80 border-b dark:border-gray-700">
             <div class="flex items-center">
                 <button @click="router.back()" class="p-2 mr-4 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800">
@@ -15,24 +15,43 @@
             </div>
         </div>
 
-        <div v-if="pending" class="flex items-center justify-center p-8"><UISpinner /></div>
-        <div v-else-if="error || !movie" class="p-4 text-center text-red-500"><p>Could not load movie details.</p></div>
+        <div v-if="pending" class="flex items-center justify-center p-8">
+            <UISpinner />
+        </div>
+
+        <div v-else-if="error || !movie" class="p-4 text-center text-red-500">
+            <p>Could not load movie details.</p>
+        </div>
 
         <div v-else class="p-4 sm:p-6 lg:p-8">
             <div class="flex flex-col md:flex-row gap-8">
+                
                 <div class="w-full md:w-1/3 lg:w-1/4">
                     <img :src="movie.image" :alt="movie.title" class="rounded-lg shadow-2xl w-full">
                 </div>
+                
                 <div class="w-full md:w-2/3 lg:w-3/4">
                     <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ movie.title }} <span class="font-light text-2xl text-gray-400">({{ movie.year }})</span></h1>
+                    
                     <div class="flex flex-wrap gap-2 mt-4">
-                        <span v-for="genre in genres" :key="genre" class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-200">{{ genre }}</span>
+                        <span v-for="genre in genres" :key="genre" class="px-3 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-200">
+                            {{ genre }}
+                        </span>
                     </div>
-                    <div class="flex items-center mt-6">
-                        <span class="text-yellow-400 text-2xl font-bold">★</span>
-                        <span class="ml-2 text-2xl font-bold text-gray-800 dark:text-white">{{ movie.rating }}</span>
-                        <span class="ml-1 text-sm text-gray-500">/ 10 IMDb</span>
+
+                    <div class="flex items-center mt-6 space-x-6">
+                        <div class="flex items-center">
+                            <span class="text-yellow-400 text-2xl font-bold">★</span>
+                            <span class="ml-2 text-2xl font-bold text-gray-800 dark:text-white">{{ movie.rating }}</span>
+                            <span class="ml-1 text-sm text-gray-500">/ 10 IMDb</span>
+                        </div>
+                        <div v-if="averageRating > 0" class="flex items-center">
+                            <span class="text-blue-400 text-2xl font-bold">♥</span>
+                            <span class="ml-2 text-2xl font-bold text-gray-800 dark:text-white">{{ averageRating }}</span>
+                            <span class="ml-1 text-sm text-gray-500">/ 10 CineTogether</span>
+                        </div>
                     </div>
+
                     <div class="mt-6">
                         <h2 class="text-xl font-semibold dark:text-white mb-2">Plot Summary</h2>
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ movie.description }}</p>
@@ -50,17 +69,20 @@
                             View on IMDb
                         </a>
                     </div>
-                    </div>
+                </div>
             </div>
+
+            <MovieRating v-if="user" :movieId="movieId" :currentUserRating="currentUserRating" @onSuccess="refresh" />
         </div>
     </div>
 </template>
 
 <script setup>
 import UISpinner from '~/components/UI/Spinner.vue';
-import { useFavorites } from '~/composables/useFavorites.js';
+import MovieRating from '~/components/Movie/Rating.vue';
 import { BookmarkIcon as BookmarkIconOutline } from '@heroicons/vue/outline';
 import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/vue/solid';
+import { useFavorites } from '~/composables/useFavorites.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -69,39 +91,56 @@ const { useAuthUser } = useAuth();
 const { addFavorite, removeFavorite } = useFavorites();
 const user = useAuthUser();
 
-// State for button loading and notifications
 const isActionLoading = ref(false);
 const notificationMessage = ref('');
 const showNotification = ref(false);
 let notificationTimer = null;
 
-// Fetch movie details and user's favorites list
-const { data, pending, error } = await useAsyncData(
+// Gerekli tüm verileri tek seferde ve güvenli bir şekilde çekiyoruz
+const { data, pending, error, refresh } = await useAsyncData(
     `movie-data-${movieId}`,
     async () => {
-        const movieRes = await $fetch(`/api/movies/${movieId}`, { baseURL: 'http://127.0.0.1:5000' });
-        if (!user.value) {
-            return { movie: movieRes.movie, favorites: [] };
+        try {
+            const movieRes = await $fetch(`/api/movies/${movieId}`, { baseURL: 'http://127.0.0.1:5000' });
+            const movieData = movieRes.movie;
+            if (!movieData) throw new Error("Movie not found");
+
+            const [favoritesRes, ratingsRes, avgRatingRes] = await Promise.all([
+                user.value ? $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }) : Promise.resolve({ favorites: [] }),
+                user.value ? $fetch(`/api/ratings/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }) : Promise.resolve({ watch_history: [] }),
+                $fetch(`/api/ratings/movie/${movieId}/average`, { baseURL: 'http://127.0.0.1:5000' })
+            ]);
+
+            return {
+                movie: movieData,
+                favorites: favoritesRes.favorites || [],
+                userRatings: ratingsRes.watch_history || [],
+                averageRating: avgRatingRes.average_rating || 0
+            };
+        } catch (e) {
+            console.error(e);
+            return { movie: null, favorites: [], userRatings: [], averageRating: 0 };
         }
-        const favoritesRes = await $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' });
-        return {
-            movie: movieRes.movie,
-            favorites: favoritesRes.favorites || []
-        };
     }
 );
 
-// Reactive state from fetched data
+// Verileri güvenli bir şekilde kullanmak için computed değişkenler
 const movie = computed(() => data.value?.movie);
 const favorites = ref(data.value?.favorites || []);
+const averageRating = computed(() => data.value?.averageRating);
 const genres = computed(() => movie.value?.genre ? movie.value.genre.split(',').map(g => g.trim()) : []);
 
-// Computed property to check if the movie is in favorites
+const currentUserRating = computed(() => {
+    if (!data.value?.userRatings) return null;
+    return data.value.userRatings.find(r => r.movie_id === parseInt(movieId));
+});
+
 const isFavorited = computed(() => {
+    if (!movie.value) return false;
     return favorites.value.some(fav => fav.movie_id === movie.value.id);
 });
 
-// Function to toggle favorite status
+// Favori ekleme/çıkarma fonksiyonu
 async function handleToggleFavorite() {
     isActionLoading.value = true;
     try {
@@ -115,15 +154,12 @@ async function handleToggleFavorite() {
             favorites.value.push({ movie_id: movie.value.id });
             triggerNotification(`'${movie.value.title}' added to favorites!`);
         }
-    } catch (e) {
-        console.error(e);
-        alert('An error occurred.');
-    } finally {
+    } catch (e) { console.error(e); } finally {
         isActionLoading.value = false;
     }
 }
 
-// Function to show notification
+// Bildirim gösterme fonksiyonu
 function triggerNotification(message) {
     notificationMessage.value = message;
     showNotification.value = true;
