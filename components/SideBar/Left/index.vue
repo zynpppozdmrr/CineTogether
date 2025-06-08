@@ -24,6 +24,13 @@
         <template v-slot:activeIcon><BookmarkIconSolid /></template>
         <template v-slot:name>Favorites</template>
       </SidebarLeftTab>
+
+      <SidebarLeftTab to="/lists" :active="isActive('/lists')">
+        <template v-slot:icon><BookmarkIconOutline /></template>
+        <template v-slot:activeIcon><BookmarkIconSolid /></template>
+        <template v-slot:name>My Lists</template>
+      </SidebarLeftTab>
+
       <SidebarLeftTab :to="profile.to" :active="isActive(profile.to)">
         <template v-slot:icon><UserIconOutline /></template>
         <template v-slot:activeIcon><UserIconSolid /></template>
