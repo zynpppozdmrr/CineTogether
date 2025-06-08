@@ -27,9 +27,10 @@
                     <h1 class="text-xl sm:text-2xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ movie.title }} <span class="font-light text-lg md:text-2xl text-gray-400">({{ movie.year }})</span></h1>
                     
                     <div class="flex flex-wrap gap-1 sm:gap-2 mt-2 sm:mt-4">
-                        <span v-for="genre in genres" :key="genre" class="px-2 py-0.5 text-[10px] sm:text-xs font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-200">
-                            {{ genre }}
+                        <span v-for="genre in genres" :key="genre" class="px-2 py-0.5 text-[10px] sm:text-xs font-medium text-purple-800 bg-purple-100 rounded-full dark:bg-purple-900 dark:text-purple-200">
+                          {{ genre }}
                         </span>
+
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-start sm:items-center mt-3 sm:mt-6 sm:space-x-4">
@@ -39,10 +40,10 @@
                             <span class="ml-1 text-xs sm:text-sm text-gray-500">/ 10 IMDb</span>
                         </div>
                         <div v-if="averageRating > 0" class="flex items-center mt-1 sm:mt-0">
-                            <span class="text-blue-400 text-lg sm:text-2xl font-bold">♥</span>
-                            <span class="ml-2 text-lg sm:text-2xl font-bold text-gray-800 dark:text-white">{{ averageRating }}</span>
-                            <span class="ml-1 text-xs sm:text-sm text-gray-500">/ 10 CineTogether</span>
-                        </div>
+    <span class="text-purple-400 text-lg sm:text-2xl font-bold">♥</span>
+    <span class="ml-2 text-lg sm:text-2xl font-bold text-gray-800 dark:text-white">{{ averageRating }}</span>
+    <span class="ml-1 text-xs sm:text-sm text-gray-500">/ 10 CineTogether</span>
+</div>
                     </div>
 
                     <div class="mt-4">
@@ -52,11 +53,11 @@
 
                     <div class="flex flex-wrap gap-2 sm:gap-4 mt-4 sm:mt-8">
                         <button @click="handleToggleFavorite" :disabled="isActionLoading" class="flex items-center px-5 py-3 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
-                            :class="isFavorited ? 'bg-pink-600 text-white hover:bg-pink-700' : 'bg-blue-600 text-white hover:bg-blue-700'">
-                            <BookmarkIconSolid v-if="isFavorited" class="w-5 h-5 mr-2" />
-                            <BookmarkIconOutline v-else class="w-5 h-5 mr-2" />
-                            {{ isFavorited ? 'In Favorites' : 'Add to Favorites' }}
-                        </button>
+    :class="isFavorited ? 'bg-pink-600 text-white hover:bg-pink-700' : 'bg-purple-600 text-white hover:bg-purple-700'">
+    <BookmarkIconSolid v-if="isFavorited" class="w-5 h-5 mr-2" />
+    <BookmarkIconOutline v-else class="w-5 h-5 mr-2" />
+    {{ isFavorited ? 'In Favorites' : 'Add to Favorites' }}
+</button>
                         
                         <button @click="handleToggleWatchlist" :disabled="isActionLoading" class="flex items-center px-5 py-3 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
                             :class="isOnWatchlist ? 'bg-gray-600 text-white hover:bg-gray-700' : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600'">

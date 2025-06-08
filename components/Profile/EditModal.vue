@@ -34,7 +34,7 @@
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
                     <button type="button" @click="handleClose" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 dark:bg-dim-700 dark:text-gray-200">Cancel</button>
-                    <button type="submit" :disabled="loading" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">
+                    <button type="submit" :disabled="loading" class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 disabled:opacity-50">
                         <span v-if="!loading">Save</span>
                         <UISpinner v-else />
                     </button>

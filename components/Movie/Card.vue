@@ -12,7 +12,7 @@
             </div>
             
             <div class="p-3 flex flex-col flex-grow">
-                <h3 class="font-bold text-xs sm:text-xs text-gray-900 dark:text-white truncate group-hover:text-blue-600" :title="movie.title">
+                <h3 class="font-bold text-xs sm:text-xs text-gray-900 dark:text-white truncate group-hover:text-purple-600" :title="movie.title">
                     {{ movie.title }}
                 </h3>
                 <div class="mt-auto pt-2 flex justify-between items-center">

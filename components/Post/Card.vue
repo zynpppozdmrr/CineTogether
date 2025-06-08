@@ -22,8 +22,8 @@
                     </div>
                     <div class="flex items-center mt-3 space-x-20">
                         <div @click.stop.prevent class="flex items-center text-gray-400 group">
-                             <IconChat class="w-5 h-5 group-hover:text-blue-400" />
-                            <p class="ml-1 text-sm group-hover:text-blue-400">{{ props.post.comments_count }}</p>
+                             <IconChat class="w-5 h-5 group-hover:text-purple-400" />
+                            <p class="ml-1 text-sm group-hover:text-purple-400">{{ props.post.comments_count }}</p>
                         </div>
                          <div @click.stop.prevent="handleLike" class="flex items-center text-gray-400 group cursor-pointer">
                              <IconHeart class="w-5 h-5 group-hover:text-red-400" :class="{'fill-current text-red-500': isLiked}" />

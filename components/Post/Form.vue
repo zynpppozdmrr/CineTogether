@@ -63,7 +63,7 @@
       <button
         @click="handleFormSubmit"
         :disabled="isButtonDisabled"
-        class="px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-600 disabled:bg-blue-300"
+        class="px-4 py-2 font-bold text-white bg-purple-500 rounded-full hover:bg-purple-600 disabled:bg-purple-300"
       >
         <span v-if="!loading">Post</span>
         <UISpinner v-else />

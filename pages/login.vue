@@ -2,7 +2,7 @@
     <div class="flex h-screen">
         <div class="relative flex-1 hidden w-0 lg:block bg-gray-100 dark:bg-dim-900">
             <div class="flex items-center justify-center h-full">
-                <h1 class="text-6xl font-bold text-blue-500">CineTogether</h1>
+                <h1 class="text-6xl font-bold text-purple-500">CineTogether</h1>
             </div>
         </div>
 
@@ -23,14 +23,14 @@
                     <form @submit.prevent="handleLogin" class="mt-8 space-y-6">
                         <div class="space-y-1">
                             <label for="login-username" class="dark:text-gray-200">Username</label>
-                            <input v-model="loginData.username" id="login-username" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input v-model="loginData.username" id="login-username" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                         </div>
                         <div class="space-y-1">
                             <label for="login-password" class="dark:text-gray-200">Password</label>
-                            <input v-model="loginData.password" id="login-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input v-model="loginData.password" id="login-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                         </div>
 
-                        <button type="submit" :disabled="loading" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" :disabled="loading" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-purple-500 hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ loading ? 'Signing in...' : 'Sign In' }}
                         </button>
                         <p v-if="authError" class="text-red-500 text-sm mt-2">{{ authError }}</p>
@@ -42,22 +42,22 @@
                     <form @submit.prevent="handleRegister" class="mt-8 space-y-6">
                         <div class="space-y-1">
                             <label for="reg-username" class="dark:text-gray-200">Username</label>
-                            <input v-model="registerData.username" id="reg-username" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input v-model="registerData.username" id="reg-username" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                         </div>
                         <div class="space-y-1">
                             <label for="reg-email" class="dark:text-gray-200">Email</label>
-                            <input v-model="registerData.email" id="reg-email" type="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input v-model="registerData.email" id="reg-email" type="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                         </div>
                         <div class="space-y-1">
                             <label for="reg-fullname" class="dark:text-gray-200">Full Name</label>
-                            <input v-model="registerData.fullName" id="reg-fullname" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input v-model="registerData.fullName" id="reg-fullname" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                         </div>
                          <div class="space-y-1">
                             <label for="reg-password" class="dark:text-gray-200">Password</label>
-                            <input v-model="registerData.password" id="reg-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input v-model="registerData.password" id="reg-password" type="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm dark:bg-dim-400 dark:text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
                         </div>
 
-                        <button type="submit" :disabled="loading" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" :disabled="loading" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-purple-500 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ loading ? 'Creating...' : 'Create Account' }}
                         </button>
                         <p v-if="authError" class="text-red-500 text-sm mt-2">{{ authError }}</p>
@@ -95,7 +95,7 @@ const registerData = reactive({
 // Dynamic class for active tab
 const tabClass = (tabName) => {
     return selectedTab.value === tabName
-        ? 'border-b-2 border-blue-500 text-blue-500'
+        ? 'border-b-2 border-purple-500 text-purple-500'
         : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300';
 };
 
@@ -120,7 +120,6 @@ async function handleRegister() {
     authError.value = null;
     try {
         await registerUser(registerData);
-        // After successful registration, automatically log the user in
         await login({
             username: registerData.username,
             password: registerData.password

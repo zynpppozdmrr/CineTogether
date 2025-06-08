@@ -28,7 +28,7 @@
                     </select>
                 </div>
                 <div v-else>
-                    <p class="text-sm font-semibold text-blue-500">This is you</p>
+                    <p class="text-sm font-semibold text-purple-500">This is you</p>
                 </div>
             </div>
         </div>
