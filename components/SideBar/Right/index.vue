@@ -32,20 +32,43 @@
       
     </div>
 
+    
     <div class="mt-4 bg-gray-50 dark:bg-dim-700 rounded-2xl">
         <h1 class="p-3 text-xl font-extrabold text-gray-900 border-b border-gray-200 dark:text-white dark:border-dim-200">
-            For Your Interest
+            You might like
         </h1>
-        <div class="p-3 hover:bg-gray-100 dark:hover:bg-dim-300 cursor-pointer">
-            <h2 class="text-md font-bold text-gray-800 dark:text-white">#CineTogether</h2>
-            <p class="text-xs text-gray-400">1.2k posts</p>
+
+        <div v-if="pending" class="p-4 flex justify-center"><UISpinner /></div>
+
+        <div v-else-if="error" class="p-3 text-sm text-center text-gray-400">
+            Could not load recommendations.
         </div>
-         <div class="p-3 hover:bg-gray-100 dark:hover:bg-dim-300 cursor-pointer">
-            <h2 class="text-md font-bold text-gray-800 dark:text-white">#NewMovie</h2>
-            <p class="text-xs text-gray-400">987 posts</p>
+        
+        <div v-else-if="recommendations && recommendations.length > 0">
+            <div v-for="rec in displayedRecommendations" :key="rec.movie_id" class="p-3 border-b border-gray-200 dark:border-gray-600 last:border-b-0">
+                <NuxtLink :to="`/movies/${rec.movie_id}`" class="flex items-start space-x-3 hover:bg-gray-100 dark:hover:bg-dim-300 rounded-lg p-2 -m-2">
+                    <div class="flex-shrink-0">
+                        <img :src="rec.image" :alt="rec.title" class="w-12 h-16 object-cover rounded-md">
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-sm text-gray-800 dark:text-white line-clamp-2">{{ rec.title }}</p>
+                        <p class="text-xs text-gray-500">{{ rec.year }}</p>
+                       
+                    </div>
+                </NuxtLink>
+            </div>
+        </div>
+
+        <div v-else class="p-3 text-sm text-center text-gray-400">
+            Add movies to your favorites to get personalized recommendations.
+        </div>
+        
+         <div v-if="recommendations && recommendations.length > 3" @click="showAllRecommendations = !showAllRecommendations" class="p-3 text-sm text-blue-400 cursor-pointer hover:bg-gray-100 dark:hover:bg-dim-300 rounded-b-2xl text-center">
+            {{ showAllRecommendations ? 'Show less' : 'Show more' }}
         </div>
     </div>
-
+    
+    
   </div>
 </template>
 
@@ -101,5 +124,42 @@ function clearSearch() {
   search.value = '';
   searchResults.value = [];
 }
+
+// ================== ÖNERİ MANTIĞI GÜNCELLENDİ ==================
+
+// 1. API'den veriyi çekiyoruz (bu kısım aynı)
+const { data: recommendations, pending, error } = await useAsyncData(
+    'user-recommendations',
+    () => useApiFetch('/api/recommendations/').then(res => res.data.value.recommendations)
+);
+
+// 2. Diziyi karıştırmak için bir fonksiyon yazıyoruz (Fisher-Yates shuffle)
+const shuffleArray = (array) => {
+    if (!array || array.length === 0) return [];
+    const newArr = [...array]; // Orijinal diziyi bozmamak için kopyasını oluştur
+    for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
+};
+
+// 3. Karıştırılmış listeyi tutan bir computed değişkeni oluşturuyoruz
+const shuffledRecommendations = computed(() => shuffleArray(recommendations.value));
+
+
+// 4. Gösterilecek listeyi, bu karıştırılmış listeye göre ayarlıyoruz
+const showAllRecommendations = ref(false);
+
+const displayedRecommendations = computed(() => {
+    if (!shuffledRecommendations.value) {
+        return [];
+    }
+    if (showAllRecommendations.value) {
+        return shuffledRecommendations.value; // Hepsini göster
+    }
+    return shuffledRecommendations.value.slice(0, 3); // Sadece ilk 3'ü göster
+});
+// ==========================================================
 
 </script>
