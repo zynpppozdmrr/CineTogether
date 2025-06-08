@@ -52,7 +52,11 @@
           <MenuButton class="flex border-2 items-center w-full p-2 rounded-full hover:bg-gray-200 dark:hover:bg-dim-800" :class="defaultTransition">
             <img :src="user?.profile_picture_url || '/default-avatar.png'" alt="profile" class="w-10 h-10 rounded-full">
             <div class="hidden ml-2 xl:block" v-if="user">
-              <p class="text-sm font-bold text-left text-gray-800 dark:text-white">{{ user.full_name }}</p>
+              <FullNameDisplay
+              :user="user"
+                outerClass="text-sm font-bold text-left text-gray-800 dark:text-white"
+              />
+
               <p class="text-sm text-gray-500">@{{ user.username }}</p>
             </div>
           </MenuButton>
@@ -122,6 +126,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { useTheme } from '~/composables/useTheme'; // Tema yardımcısını import et
 // Diğer component ve fonksiyonları import ediyoruz
 import SidebarLeftTab from './Tab.vue';
+import FullNameDisplay from '@/components/FullNameDisplay.vue'
 import { useRoute } from 'vue-router';
 const { useAuthUser, logout } = useAuth();
 const user = useAuthUser();

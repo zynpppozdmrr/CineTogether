@@ -10,7 +10,11 @@
                 <div class="flex-1">
                     <div class="flex items-center space-x-1">
                         <NuxtLink :to="`/profile/${author.username}`" @click.stop>
-                             <p class="font-bold text-gray-900 dark:text-white hover:underline">{{ author.full_name || author.username }}</p>
+                             <FullNameDisplay 
+                             :user="author"
+                              outerClass="font-bold text-gray-900 dark:text-white hover:underline"
+                            />
+
                         </NuxtLink>
                         <p class="text-sm text-gray-500">@{{ author.username }}</p>
                         <p class="text-sm text-gray-500">·</p>

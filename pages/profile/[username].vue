@@ -39,8 +39,7 @@
     </div>
         
         <div class="mt-4">
-          <p class="text-xl font-bold">{{ profileUser.full_name }}</p>
-
+          <FullNameDisplay :user="profileUser" class="text-xl font-bold" />
           <p class="text-sm text-gray-500">@{{ profileUser.username }}</p>
         </div>
         <p class="mt-2 text-gray-800 dark:text-gray-300">
@@ -96,6 +95,7 @@ import UISpinner from "~/components/UI/Spinner.vue";
 import { useFollows } from "~/composables/useFollows.js";
 
 import ProfileEditModal from '~/components/Profile/EditModal.vue';
+import FullNameDisplay from '@/components/FullNameDisplay.vue';
 
 const route = useRoute();
 
