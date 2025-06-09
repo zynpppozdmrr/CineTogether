@@ -36,7 +36,7 @@ export const useLikes = () => {
                 await $fetch('/api/likes/remove', {
                     method: 'POST',
                     body: formData,
-                    baseURL: 'http://127.0.0.1:5000',
+                    baseURL: apiBase,
                     headers: {
                         'Authorization': `Bearer ${authToken.value}`
                     }

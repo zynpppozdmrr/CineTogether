@@ -56,6 +56,8 @@ const emits = defineEmits(['onClose', 'onSuccess']);
 const { useAuthToken } = useAuth();
 const authToken = useAuthToken();
 const loading = ref(false);
+const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
 
 // Form data
 const formData = ref({
@@ -115,7 +117,7 @@ async function submitForm() {
         await $fetch(`/api/users/${props.user.username}`, {
             method: 'PUT',
             body: backendFormData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
 

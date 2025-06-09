@@ -16,6 +16,8 @@ const props = defineProps({
     post: { type: Object, required: true }
 });
 const { useAuthToken } = useAuth();
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 async function submitComment() {
     if (!text.value) return;
@@ -28,7 +30,7 @@ async function submitComment() {
         const response = await $fetch('/api/comments/create', {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${useAuthToken().value}` }
         });
         

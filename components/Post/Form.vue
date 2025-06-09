@@ -82,6 +82,8 @@ const emits = defineEmits(["onSuccess"]);
 const { useAuthUser, useAuthToken } = useAuth();
 const user = useAuthUser();
 const authToken = useAuthToken();
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 // Image upload refs
 const imageInput = ref();
@@ -151,7 +153,7 @@ async function handleFormSubmit() {
     await $fetch("/api/posts/create", {
       method: "POST",
       body: postData,
-      baseURL: "http://127.0.0.1:5000",
+      baseURL: apiBase,
       headers: {
         Authorization: `Bearer ${authToken.value}`,
       },
