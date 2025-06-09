@@ -2,7 +2,7 @@
   <div class="flex flex-col h-screen p-2">
     <div class="p-2 my-2 rounded-full w-min hover:bg-blue-50 dark:hover:bg-white/20" :class="defaultTransition">
       <NuxtLink to="/">
-        <div class="w-8 h-8">
+        <div class="w-12 h-12">
             <LogoCinetogether />
         </div>
       </NuxtLink>
