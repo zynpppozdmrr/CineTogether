@@ -1,20 +1,19 @@
+# from dotenv import load_dotenv
+# load_dotenv()  --> Buna artık gerek yok
+
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-jwt = JWTManager()
-
 
 db = SQLAlchemy()
+jwt = JWTManager()
 
 def createApp():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
-    app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLALCHEMY_DATABASE_URI")
+    app.config['JWT_SECRET_KEY'] = os.environ.get("JWT_SECRET_KEY")
 
     db.init_app(app)
     jwt.init_app(app)

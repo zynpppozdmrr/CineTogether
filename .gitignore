@@ -19,9 +19,9 @@ logs
 .idea
 
 # Local env files
-.env
-.env.*
-!.env.example
+#.env
+#.env.*
+#!.env.example
 
 # Python derlenmiş dosyalar
 _pycache_/
@@ -31,8 +31,6 @@ _pycache_/
 # Sanal ortam (virtual environment)
 venv/
 
-# Ortam değişkenleri (şifre, veritabanı bağlantısı vs.)
-.env
 
 # VS Code ayarları
 .vscode/
