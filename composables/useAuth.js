@@ -6,6 +6,7 @@ export default () => {
     const useAuthUser = () => useState('auth_user');
     const useAuthLoading = () => useState('auth_loading', () => true);
     const config = useRuntimeConfig()
+    console.log("BaseURL:", config.public.apiBase);
 
     const setToken = (newToken) => {
         const authToken = useAuthToken();

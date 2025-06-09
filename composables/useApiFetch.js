@@ -4,7 +4,7 @@ export const useApiFetch = (url, options = {}) => {
     
     // useFetch için varsayılan ayarlar
     const defaults = {
-        baseURL: config.public.apiBaseUrl, // Backend adresimiz
+        baseURL: config.public.apiBase, // Backend adresimiz
         key: url, // İstekleri cache'lemek için benzersiz bir anahtar
 
         // Headers
