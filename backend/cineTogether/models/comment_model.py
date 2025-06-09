@@ -31,8 +31,9 @@ class Comment(db.Model):
     # ✅ Post'a ait aktif yorumları getir
     @classmethod
     def get_comments_by_post(cls, post_id):
-        return cls.query.filter_by(post_id=post_id, is_active=True).order_by(cls.created_at.desc()).all()
-
+        from .user_model import User # Circular import önlemek için burada import ediyoruz
+        # Yorumları User tablosu ile birleştirip (join) her iki tablodaki aktiflik durumunu kontrol ediyoruz
+        return cls.query.join(User, User.id == cls.user_id).filter(cls.post_id == post_id, cls.is_active == True, User.activated == True).order_by(cls.created_at.desc()).all()
     # ✅ Soft delete
     @classmethod
     def delete_comment(cls, comment_id):

@@ -36,8 +36,10 @@ class Post(db.Model):
 
     @classmethod
     def get_all(cls):
-        return cls.query.filter_by(is_active=True).order_by(cls.created_at.desc()).all()  # ✅ Sadece aktif postlar
-
+        from .user_model import User # Circular import önlemek için burada import ediyoruz
+        # Postları User tablosu ile birleştirip (join) her iki tablodaki aktiflik durumunu kontrol ediyoruz
+        return cls.query.join(User, User.id == cls.user_id).filter(cls.is_active == True, User.activated == True).order_by(cls.created_at.desc()).all()
+   
     @classmethod
     def get_by_id(cls, post_id):
         post = cls.query.get(post_id)
