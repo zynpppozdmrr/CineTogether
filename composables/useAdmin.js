@@ -11,7 +11,7 @@ export const useAdmin = () => {
         return $fetch('/api/users/activate', {
             method: 'POST',
             body: formData,
-            baseURL: config.public.apiBaseUrl,
+            baseURL: config.public.apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }
@@ -24,7 +24,7 @@ export const useAdmin = () => {
         return $fetch(`/api/users/deactivate`, {
             method: 'POST',
             body: formData,
-            baseURL: config.public.apiBaseUrl,
+            baseURL: config.public.apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }

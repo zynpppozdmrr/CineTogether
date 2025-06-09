@@ -24,7 +24,7 @@ export default () => {
                 formData.append('username', username);
                 formData.append('password', password);
 
-                const data = await $fetch(config.public.apiBase, {
+                const data = await $fetch(`${config.public.apiBase}/api/users/login`, {
                     method: 'POST',
                     body: formData
                 });
@@ -48,7 +48,7 @@ export default () => {
                 formData.append('password', registerData.password);
                 formData.append('full_name', registerData.fullName);
 
-                const response = await $fetch(config.public.apiBase, {
+                const response = await $fetch(`${config.public.apiBase}/api/users/addUser`, {
                     method: 'POST',
                     body: formData
                 });
@@ -81,7 +81,7 @@ export default () => {
                 }
                 
                 // Artık useApiFetch'i kullanabiliriz veya $fetch ile devam edebiliriz
-                const data = await $fetch(`${config.apiBase}/api/users/me`, {
+                const data = await $fetch(`${config.public.apiBase}/api/users/me`, {
                      headers: {
                         'Authorization': `Bearer ${token}`
                     }
