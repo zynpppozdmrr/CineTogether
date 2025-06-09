@@ -1,6 +1,6 @@
 <template>
     <div class="p-4 border-t border-b dark:border-gray-700">
-        <textarea v-model="text" class="w-full p-2 bg-gray-100 dark:bg-dim-400 rounded-lg focus:outline-none" placeholder="Post your reply..."></textarea>
+        <textarea v-model="text" class="w-full p-2 bg-gray-100 dark:bg-dim-400 dark:text-gray-300 rounded-lg focus:outline-none" placeholder="Post your reply..."></textarea>
         <div class="text-right mt-2">
             <button @click="submitComment" :disabled="!text.trim()" class="px-4 py-2 font-bold text-white bg-purple-500 rounded-full hover:bg-purple-600 disabled:bg-purple-300">
                 Reply
