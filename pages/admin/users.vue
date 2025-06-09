@@ -69,7 +69,35 @@ const { data: users, pending, refresh } = await useAsyncData(
     () => $fetch('/api/users/', { baseURL: apiBase }).then(res => res.data)
 );
 
-// ... (changeUserRole ve notification fonksiyonları aynı kalacak)
+async function changeUserRole(userToUpdate, newRole) {
+    try {
+        const formData = new FormData();
+        formData.append('role', newRole);
+
+        await $fetch(`/api/users/${userToUpdate.username}`, {
+            method: 'PUT',
+            body: formData,
+            baseURL: 'http://127.0.0.1:5000',
+            headers: { 'Authorization': `Bearer ${authToken.value}` }
+        });
+
+        // Arayüzü anında güncellemek için listedeki kullanıcının rolünü değiştir
+        const userInList = users.value.find(u => u.id === userToUpdate.id);
+        if (userInList) {
+            userInList.role = newRole;
+        }
+
+        // Başarı bildirimi göster
+        triggerNotification(`User '${userToUpdate.username}' role has been updated to '${newRole}'.`);
+
+    } catch (error) {
+        console.error("Failed to update user role:", error);
+        alert("Failed to update role.");
+        // Hata durumunda dropdown'ı eski haline getirmek için sayfayı yenilemek iyi bir fikir olabilir
+        refresh();
+    }
+}
+
 
 // ================== YENİ FONKSİYONLAR ==================
 async function handleDeactivate(userToUpdate) {
