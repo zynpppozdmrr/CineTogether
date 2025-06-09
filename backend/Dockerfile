@@ -8,9 +8,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-
-
-# 4. Geri kalan tüm dosyaları kopyala
+# 4. Geri kalan tüm dosyaları kopyala (wait-for-it.sh içinde yer almalıysa burada olur)
 COPY . .
 
 # 5. Ortam değişkenlerini tanımla
@@ -19,12 +17,11 @@ ENV FLASK_RUN_PORT=5000
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_ENV=production
 
-# 6. Portu dışa aç
+# 6. wait-for-it.sh'e çalıştırma izni ver
+RUN chmod +x /app/wait-for-it.sh
+
+# 7. Portu dışa aç
 EXPOSE 5000
 
-# 7. Uygulamayı başlat
-CMD ["flask", "run"]
-
-
-COPY wait-for-it.sh /wait-for-it.sh
-RUN chmod +x /wait-for-it.sh
+# 8. Uygulamayı başlat
+CMD ["./wait-for-it.sh", "db:5432", "--", "flask", "run"]
