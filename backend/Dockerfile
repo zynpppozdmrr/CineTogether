@@ -23,7 +23,7 @@ ENV FLASK_ENV=production
 EXPOSE 5000
 
 # 7. Uygulamayı başlat
-CMD ["python", "seed_movies.py"]
+CMD ["flask", "run"]
 
 
 COPY wait-for-it.sh /wait-for-it.sh
