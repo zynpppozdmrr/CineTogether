@@ -2,6 +2,7 @@
 export const useAdmin = () => {
     const { useAuthToken } = useAuth()
     const authToken = useAuthToken()
+    const config = useRuntimeConfig()
 
     const activateUser = (username) => {
         const formData = new FormData();
@@ -10,7 +11,7 @@ export const useAdmin = () => {
         return $fetch('/api/users/activate', {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: config.public.apiBaseUrl,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }
@@ -23,7 +24,7 @@ export const useAdmin = () => {
         return $fetch(`/api/users/deactivate`, {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: config.public.apiBaseUrl,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }

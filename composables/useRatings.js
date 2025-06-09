@@ -2,7 +2,8 @@
 export const useRatings = () => {
     const { useAuthToken } = useAuth()
     const authToken = useAuthToken()
-
+    const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
     const addRating = ({ movieId, rating, comment }) => {
         const formData = new FormData();
         formData.append('movie_id', movieId);
@@ -12,7 +13,7 @@ export const useRatings = () => {
         return $fetch('/api/ratings/', {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }
@@ -26,7 +27,7 @@ export const useRatings = () => {
         return $fetch('/api/ratings/update', {
             method: 'PUT',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }
@@ -39,7 +40,7 @@ export const useRatings = () => {
         return $fetch('/api/ratings/delete', {
             method: 'DELETE',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }

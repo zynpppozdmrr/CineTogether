@@ -42,6 +42,8 @@ import UISpinner from '~/components/UI/Spinner.vue';
 
 const { useAuthUser } = useAuth();
 const user = useAuthUser();
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 const selectedTab = ref('watchlist'); // 'watchlist' or 'watched'
 
@@ -53,8 +55,8 @@ const { data, pending, error } = await useAsyncData(
             return { watchlist: [], watched: [] };
         }
         return Promise.all([
-            $fetch(`/api/watchlists/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
-            $fetch(`/api/watched/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' })
+            $fetch(`/api/watchlists/user/${user.value.id}`, { baseURL: apiBase }),
+            $fetch(`/api/watched/user/${user.value.id}`, { baseURL: apiBase })
         ]).then(([watchlistRes, watchedRes]) => {
             return {
                 watchlist: watchlistRes.watchlist || [],

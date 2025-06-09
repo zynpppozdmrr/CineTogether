@@ -27,6 +27,8 @@ import UISpinner from '~/components/UI/Spinner.vue';
 
 const { useAuthUser } = useAuth();
 const user = useAuthUser();
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 // Fetch the logged-in user's favorite movies
 const { data: favoriteMovies, pending, error } = await useAsyncData(
@@ -35,7 +37,7 @@ const { data: favoriteMovies, pending, error } = await useAsyncData(
         if (!user.value) {
             return [];
         }
-        return $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' })
+        return $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: apiBase})
                .then(res => {
                     // Match the data structure expected by the MovieCard component
                     return res.favorites.map(fav => ({

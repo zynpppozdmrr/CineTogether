@@ -1,9 +1,10 @@
 export const useApiFetch = (url, options = {}) => {
     const { useAuthToken } = useAuth() // Auth composable'dan token'ı alacağız
-
+    const config = useRuntimeConfig()
+    
     // useFetch için varsayılan ayarlar
     const defaults = {
-        baseURL: 'http://127.0.0.1:5000', // Backend adresimiz
+        baseURL: config.public.apiBaseUrl, // Backend adresimiz
         key: url, // İstekleri cache'lemek için benzersiz bir anahtar
 
         // Headers

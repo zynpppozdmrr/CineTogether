@@ -41,6 +41,9 @@ const post = ref(null);
 const comments = ref([]);
 const users = ref([]); // We will fetch all users to pass them down
 
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
+
 onBeforeMount(async () => {
     const postId = route.params.id;
     loading.value = true;

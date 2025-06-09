@@ -61,10 +61,12 @@ const { useAuthUser, useAuthToken } = useAuth();
 const { activateUser, deactivateUser } = useAdmin(); // Yeni fonksiyonları al
 const loggedInUser = useAuthUser();
 const authToken = useAuthToken();
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 const { data: users, pending, refresh } = await useAsyncData(
     'admin-users',
-    () => $fetch('/api/users/', { baseURL: 'http://127.0.0.1:5000' }).then(res => res.data)
+    () => $fetch('/api/users/', { baseURL: apiBase }).then(res => res.data)
 );
 
 // ... (changeUserRole ve notification fonksiyonları aynı kalacak)

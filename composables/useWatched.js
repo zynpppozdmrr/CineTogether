@@ -2,6 +2,8 @@
 export const useWatched = () => {
     const { useAuthToken } = useAuth()
     const authToken = useAuthToken()
+    const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
 
     const markAsWatched = (movieId) => {
         const formData = new FormData();
@@ -10,7 +12,7 @@ export const useWatched = () => {
         return $fetch('/api/watched/add', {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }
@@ -22,7 +24,7 @@ export const useWatched = () => {
         return $fetch('/api/watched/remove', {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
     }
