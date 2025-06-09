@@ -21,7 +21,7 @@ from cineTogether.initialize_db import createDB
 
 # APP AND DB CREATION ---------------------------------------------------------
 app = createApp()
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app)
 createDB()
 # -----------------------------------------------------------------------------
 
