@@ -23,7 +23,7 @@ export default defineNuxtConfig({
       rapidApiKey: process.env.NUXT_PUBLIC_RAPIDAPI_KEY,
       rapidApiHost: process.env.NUXT_PUBLIC_RAPIDAPI_HOST,
       rapidApiBaseUrl: process.env.NUXT_PUBLIC_RAPIDAPI_BASE_URL,
-      apiBase: process.env.NUXT_PUBLIC_API_BASE_URL 
+      apiBase:'https://cinetogether-backend.onrender.com'
     }
     
   }
