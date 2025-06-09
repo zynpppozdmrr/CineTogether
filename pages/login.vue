@@ -1,10 +1,14 @@
 <template>
     <div class="flex h-screen">
-        <div class="relative flex-1 hidden w-0 lg:block bg-gray-100 dark:bg-dim-900">
-            <div class="flex items-center justify-center h-full">
-                <h1 class="text-6xl font-bold text-purple-500">CineTogether</h1>
-            </div>
+         <div 
+            class="relative flex-1 hidden w-0 lg:block bg-cover bg-center" 
+            :style="{ backgroundImage: `url('https://res.cloudinary.com/dxlkdp8p9/image/upload/v1749474346/bgLogin_kgvc3t.png')` }"
+        >
+            <div class="absolute inset-0 bg-black opacity-25"></div>
+            
+            
         </div>
+
 
         <div class="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
             <div class="w-full max-w-sm mx-auto lg:w-96">

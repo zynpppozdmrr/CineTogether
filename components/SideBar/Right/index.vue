@@ -136,7 +136,7 @@ const { data: recommendations, pending, error } = await useAsyncData(
 // 2. Diziyi karıştırmak için bir fonksiyon yazıyoruz (Fisher-Yates shuffle)
 const shuffleArray = (array) => {
     if (!array || array.length === 0) return [];
-    const newArr = [...array]; // Orijinal diziyi bozmamak için kopyasını oluştur
+    const newArr = [...array];
     for (let i = newArr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
@@ -155,10 +155,12 @@ const displayedRecommendations = computed(() => {
     if (!shuffledRecommendations.value) {
         return [];
     }
+    // Eğer "Show more"a tıklandıysa, listenin tamamı yerine sadece ilk 6'yı göster
     if (showAllRecommendations.value) {
-        return shuffledRecommendations.value; // Hepsini göster
+        return shuffledRecommendations.value.slice(0, 6);
     }
-    return shuffledRecommendations.value.slice(0, 3); // Sadece ilk 3'ü göster
+    // Başlangıçta sadece ilk 3'ü göster
+    return shuffledRecommendations.value.slice(0, 3);
 });
 // ==========================================================
 

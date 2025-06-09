@@ -16,7 +16,7 @@
     <div v-else>
       <div class="border-b dark:border-gray-700 p-4">
      <div class="flex items-center justify-between">
-    <img :src="profileUser.profile_picture_url || '/default-avatar.png'" class="w-24 h-24 rounded-full border-4 dark:border-dim-900" />
+    <img :src="profileUser.profile_picture_url || 'https://res.cloudinary.com/dxlkdp8p9/image/upload/v1749477965/default_user_lagwqj.png'" class="w-24 h-24 rounded-full border-4 dark:border-dim-900" />
     
     <div v-if="loggedInUser && profileUser" class="mt-4">
         

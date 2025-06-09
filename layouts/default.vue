@@ -8,16 +8,17 @@
     </Transition>
     <div v-if="showRightSidebar" @click="closeSidebars" class="fixed inset-0 bg-black/40 z-40"></div>
 
-    <div class="container mx-auto">
-        <div class="grid grid-cols-12">
-            <div class="hidden sm:block col-span-1 xl:col-span-2">
+   <div class="container mx-auto">
+        <div class="grid grid-cols-12 mx-auto sm:px-6 lg:max-w-7xl lg:px-8 lg:gap-5">
+
+            <div class="hidden sm:block md:col-span-1 xl:col-span-3">
                 <div class="sticky top-0">
                     <SidebarLeft />
                 </div>
             </div>
 
-            <main class="col-span-12 sm:col-span-11 md:col-span-8 xl:col-span-6 border-x dark:border-gray-700">
-                <Header />
+            <main class="col-span-12 sm:col-span-11 md:col-span-8 xl:col-span-5 border-x dark:border-gray-700 min-h-screen pb-16 sm:pb-0">
+                <Header/>
                 <slot />
             </main>
 
@@ -26,8 +27,9 @@
                     <SidebarRight />
                 </div>
             </div>
+
         </div>
-    </div>
+        </div>
 
     <BottomNav @open-search="showRightSidebar = !showRightSidebar" />
   </div>

@@ -2,7 +2,9 @@
   <div :class="{ 'dark': isDarkMode }">
     <div class="bg-white dark:bg-dim-900">
       <div v-if="isAuthLoading" class="min-h-screen flex items-center justify-center">
-        <UISpinner />
+        <div class="w-60 h-60">
+          <LogoCinetogether class="animate-ping" />
+        </div>
       </div>
       <div v-else>
         <NuxtLayout>

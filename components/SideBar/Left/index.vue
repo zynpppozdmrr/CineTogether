@@ -3,7 +3,7 @@
     <div class="p-2 my-2 rounded-full w-min hover:bg-blue-50 dark:hover:bg-white/20" :class="defaultTransition">
       <NuxtLink to="/">
         <div class="w-8 h-8">
-            <FilmIcon />
+            <LogoCinetogether />
         </div>
       </NuxtLink>
     </div>
@@ -47,11 +47,11 @@
     </div>
 
     <div class="mt-auto">
-      <Menu as="div" class="relative inline-block text-left w-full">
+      <Menu as="div" class="relative inline-block text-left w-auto">
         <div>
           <MenuButton class="flex border-2 items-center w-full p-2 rounded-full hover:bg-gray-200 dark:hover:bg-dim-800" :class="defaultTransition">
             <img :src="user?.profile_picture_url || '/default-avatar.png'" alt="profile" class="w-10 h-10 rounded-full">
-            <div class="hidden ml-2 xl:block" v-if="user">
+            <div class="hidden ml-2 xl:block pr-4" v-if="user">
               <FullNameDisplay
               :user="user"
                 outerClass="text-sm font-bold text-left text-gray-800 dark:text-white"

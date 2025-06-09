@@ -16,7 +16,7 @@
                 
                 <div class="flex items-center space-x-4">
                     <NuxtLink :to="`/profile/${user.username}`">
-                        <img :src="user.profile_picture_url || '/default-avatar.png'" class="w-10 h-10 rounded-full hover:opacity-80" />
+                        <img :src="user.profile_picture_url || 'https://res.cloudinary.com/dxlkdp8p9/image/upload/v1749477965/default_user_lagwqj.png'" class="w-10 h-10 rounded-full hover:opacity-80" />
                     </NuxtLink>
                     <div>
                         <NuxtLink :to="`/profile/${user.username}`">

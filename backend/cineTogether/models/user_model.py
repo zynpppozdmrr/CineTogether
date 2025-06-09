@@ -32,6 +32,13 @@ class User(db.Model):
     @classmethod
     def add_user(cls, username, email, password, full_name=None, bio=None, profile_picture_url=None, role="user"):
         hashed_password = generate_password_hash(password)
+
+        # ================== DEĞİŞİKLİK BURADA ==================
+        # Eğer bir profil fotoğrafı URL'si gelmemişse, varsayılanı ata.
+        if not profile_picture_url:
+            profile_picture_url = 'https://res.cloudinary.com/dxlkdp8p9/image/upload/v1749477965/default_user_lagwqj.png'
+        # =======================================================
+
         new_user = cls(
             username=username,
             email=email,
