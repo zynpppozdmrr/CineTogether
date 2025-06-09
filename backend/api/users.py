@@ -140,6 +140,37 @@ def activate_user():
         return jsonify({"success": False, "message": "There was an error activating the user"})
 
 
+@apiUsers.route("/deactivate", methods=["POST"])
+@jwt_required()
+def deactivate_user():
+    try:
+        # Sadece adminler bu işlemi yapabilir
+        current_user_id = get_jwt_identity()
+        admin_user = User.get_user_by_id(current_user_id)
+        if not admin_user or admin_user.role.lower() != 'admin':
+            return jsonify({"success": False, "message": "Admin access required"}), 403
+
+        username = request.form.get("username")
+        if not username:
+            return jsonify({"success": False, "message": "Username is required"}), 400
+
+        user_to_deactivate = User.get_user_by_username(username)
+        if not user_to_deactivate:
+            return jsonify({"success": False, "message": "User not found"}), 404
+        
+        # Adminin kendini deaktif etmesini engelle
+        if int(current_user_id) == user_to_deactivate.id:
+            return jsonify({"success": False, "message": "Admin cannot deactivate themselves"}), 403
+
+        # Modeli kullanarak kullanıcıyı deaktif et
+        User.update_user(user_to_deactivate.id, activated=False)
+
+        return jsonify({"success": True, "message": f"User '{username}' has been deactivated"})
+
+    except Exception as e:
+        print("ERROR in deactivate_user:", e)
+        return jsonify({"success": False, "message": "An error occurred while deactivating the user"}), 500
+
 
 # GET ACTIVE USERS
 @apiUsers.route("/active", methods=["GET"])
@@ -186,6 +217,10 @@ def login():
 
         if not user:
             return jsonify({"success": False, "message": "User not found"}), 404
+
+         # Kullanıcının aktif olup olmadığını kontrol et
+        if not user.activated:
+            return jsonify({"success": False, "message": "This account has been deactivated"}), 403 # 403 Forbidden
 
         if not check_password_hash(user.password, password):
             return jsonify({"success": False, "message": "Incorrect password"}), 401

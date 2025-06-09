@@ -109,17 +109,20 @@ const loggedInUser = useAuthUser();
 
 const username = route.params.username;
 
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
+
 const { data, pending, error, refresh } = await useAsyncData(
   `profile-${username}`,
 
   async () => {
     try {
       const [userRes, postsRes, allUsersRes] = await Promise.all([
-        $fetch(`/api/users/${username}`, { baseURL: "http://127.0.0.1:5000" }),
+        $fetch(`/api/users/${username}`, { baseURL: apiBase }),
 
-        $fetch(`/api/posts/${username}`, { baseURL: "http://127.0.0.1:5000" }),
+        $fetch(`/api/posts/${username}`, { baseURL: apiBase }),
 
-        $fetch("/api/users/", { baseURL: "http://127.0.0.1:5000" }),
+        $fetch("/api/users/", { baseURL: apiBase }),
       ]);
 
       const profileUser = userRes.data;
@@ -132,21 +135,21 @@ const { data, pending, error, refresh } = await useAsyncData(
 
       // Takipçi ve takip edilen verilerini aynı anda çekiyoruz
       const [followersRes, followingRes] = await Promise.all([
-        $fetch(`/api/follows/followers/${profileUser.id}`, { baseURL: "http://127.0.0.1:5000" }),
-        $fetch(`/api/follows/following/${profileUser.id}`, { baseURL: "http://127.0.0.1:5000" })
+        $fetch(`/api/follows/followers/${profileUser.id}`, { baseURL: apiBase }),
+        $fetch(`/api/follows/following/${profileUser.id}`, { baseURL: apiBase })
       ]);
 
       const userPosts = postsRes.posts || [];
 
       const likePromises = userPosts.map((post) =>
         $fetch(`/api/likes/post/${post.id}`, {
-          baseURL: "http://127.0.0.1:5000",
+          baseURL: apiBase,
         })
       );
 
       const commentPromises = userPosts.map((post) =>
         $fetch(`/api/comments/post/${post.id}`, {
-          baseURL: "http://127.0.0.1:5000",
+          baseURL: apiBase,
         })
       );
 

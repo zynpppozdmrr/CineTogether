@@ -102,6 +102,8 @@ const { addFavorite, removeFavorite } = useFavorites();
 const { addToWatchlist, removeFromWatchlist } = useWatchlist();
 const { markAsWatched, removeFromWatched } = useWatched(); 
 const user = useAuthUser();
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 const isActionLoading = ref(false);
 const notificationMessage = ref('');
@@ -113,11 +115,11 @@ const { data, pending, error, refresh } = await useAsyncData(
     `movie-data-${movieId}`,
     async () => {
         try {
-            const movieRes = await $fetch(`/api/movies/${movieId}`, { baseURL: 'http://127.0.0.1:5000' });
+            const movieRes = await $fetch(`/api/movies/${movieId}`, { baseURL: apiBase });
             if (!movieRes.movie) throw new Error("Movie not found");
 
             // Fetch average rating for the movie
-            const avgRatingRes = await $fetch(`/api/ratings/movie/${movieId}/average`, { baseURL: 'http://127.0.0.1:5000' });
+            const avgRatingRes = await $fetch(`/api/ratings/movie/${movieId}/average`, { baseURL: apiBase });
 
             // If user is not logged in, return public data
             if (!user.value) {
@@ -133,10 +135,10 @@ const { data, pending, error, refresh } = await useAsyncData(
 
             // If user is logged in, fetch their specific data
             const [favoritesRes, ratingsRes, watchlistRes,watchedRes] = await Promise.all([
-                $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
-                $fetch(`/api/ratings/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
-                $fetch(`/api/watchlists/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' }),
-                $fetch(`/api/watched/user/${user.value.id}`, { baseURL: 'http://127.0.0.1:5000' })
+                $fetch(`/api/favorites/user/${user.value.id}`, { baseURL: apiBase }),
+                $fetch(`/api/ratings/user/${user.value.id}`, { baseURL: apiBase }),
+                $fetch(`/api/watchlists/user/${user.value.id}`, { baseURL: apiBase }),
+                $fetch(`/api/watched/user/${user.value.id}`, { baseURL: apiBase })
             ]);
 
 

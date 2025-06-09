@@ -33,6 +33,12 @@ class User(db.Model):
     def add_user(cls, username, email, password, full_name=None, bio=None, profile_picture_url=None, role="user"):
         hashed_password = generate_password_hash(password)
 
+
+         # Veritabanında hiç kullanıcı var mı diye kontrol et
+        if cls.query.count() == 0:
+            # Eğer hiç kullanıcı yoksa, bu ilk kullanıcıdır, rolünü 'admin' yap.
+            role = 'admin'
+            
         # ================== DEĞİŞİKLİK BURADA ==================
         # Eğer bir profil fotoğrafı URL'si gelmemişse, varsayılanı ata.
         if not profile_picture_url:

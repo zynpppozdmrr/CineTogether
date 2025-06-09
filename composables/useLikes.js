@@ -3,6 +3,8 @@ export const useLikes = () => {
 
     const { useAuthToken } = useAuth()
     const authToken = useAuthToken()
+    const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
 
     const addLike = (postId) => {
         return new Promise(async (resolve, reject) => {
@@ -13,7 +15,7 @@ export const useLikes = () => {
                 await $fetch('/api/likes/add', {
                     method: 'POST',
                     body: formData,
-                    baseURL: 'http://127.0.0.1:5000',
+                    baseURL: apiBase,
                     headers: {
                         'Authorization': `Bearer ${authToken.value}`
                     }

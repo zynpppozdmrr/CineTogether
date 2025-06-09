@@ -1,6 +1,8 @@
 export const useFollows = () => {
-   const { useAuthToken } = useAuth()
+    const { useAuthToken } = useAuth()
     const authToken = useAuthToken()
+    const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
 
     const makeFollowRequest = (endpoint, followeeId) => {
         const formData = new FormData();
@@ -9,7 +11,7 @@ export const useFollows = () => {
         return $fetch(endpoint, {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: {
                 'Authorization': `Bearer ${authToken.value}`
             }

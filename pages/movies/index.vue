@@ -23,11 +23,13 @@
 <script setup>
 import MovieCard from '~/components/Movie/Card.vue';
 import UISpinner from '~/components/UI/Spinner.vue';
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 // `useAsyncData` ile veriyi güvenli bir şekilde çekiyoruz
 const { data: movies, pending, error } = await useAsyncData(
     'movies-list',
     // Backend'den gelen yanıtın içindeki 'movies' dizisini alıyoruz
-    () => $fetch('/api/movies/', { baseURL: 'http://127.0.0.1:5000' }).then(res => res.movies)
+    () => $fetch('/api/movies/', { baseURL: apiBase }).then(res => res.movies)
 );
 </script>

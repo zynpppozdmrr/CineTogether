@@ -5,6 +5,7 @@ export default () => {
     const useAuthToken = () => useCookie('auth_token');
     const useAuthUser = () => useState('auth_user');
     const useAuthLoading = () => useState('auth_loading', () => true);
+    const config = useRuntimeConfig()
 
     const setToken = (newToken) => {
         const authToken = useAuthToken();
@@ -23,7 +24,7 @@ export default () => {
                 formData.append('username', username);
                 formData.append('password', password);
 
-                const data = await $fetch('http://127.0.0.1:5000/api/users/login', {
+                const data = await $fetch(config.public.apiBase, {
                     method: 'POST',
                     body: formData
                 });
@@ -47,7 +48,7 @@ export default () => {
                 formData.append('password', registerData.password);
                 formData.append('full_name', registerData.fullName);
 
-                const response = await $fetch('http://127.0.0.1:5000/api/users/addUser', {
+                const response = await $fetch(config.public.apiBase, {
                     method: 'POST',
                     body: formData
                 });
@@ -80,7 +81,7 @@ export default () => {
                 }
                 
                 // Artık useApiFetch'i kullanabiliriz veya $fetch ile devam edebiliriz
-                const data = await $fetch('http://127.0.0.1:5000/api/users/me', {
+                const data = await $fetch(`${config.apiBase}/api/users/me`, {
                      headers: {
                         'Authorization': `Bearer ${token}`
                     }

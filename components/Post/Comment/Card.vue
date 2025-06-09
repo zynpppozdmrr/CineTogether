@@ -2,7 +2,7 @@
     <div v-if="author" class="p-4 border-b dark:border-gray-700">
         <div class="flex space-x-3">
             <NuxtLink :to="`/profile/${author.username}`">
-                <img :src="author.profile_picture_url || '/default-avatar.png'" class="w-10 h-10 rounded-full">
+                <img :src="author.profile_picture_url || 'https://res.cloudinary.com/dxlkdp8p9/image/upload/v1749477965/default_user_lagwqj.png'" class="w-10 h-10 rounded-full">
             </NuxtLink>
             <div class="flex-1">
                 <div class="flex items-center space-x-2">

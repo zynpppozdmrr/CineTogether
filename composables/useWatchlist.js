@@ -2,6 +2,8 @@
 export const useWatchlist = () => {
     const { useAuthToken } = useAuth()
     const authToken = useAuthToken()
+    const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
 
     const addToWatchlist = (movieId) => {
         const formData = new FormData();
@@ -10,7 +12,7 @@ export const useWatchlist = () => {
         return $fetch('/api/watchlists/add', {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: {
                 'Authorization': `Bearer ${authToken.value}`
             }

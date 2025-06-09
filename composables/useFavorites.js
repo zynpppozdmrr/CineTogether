@@ -2,6 +2,8 @@
 export const useFavorites = () => {
     const { useAuthToken } = useAuth()
     const authToken = useAuthToken()
+    const config = useRuntimeConfig()
+    const apiBase = config.public.apiBase
 
     // Helper function to create the request
     const makeFavoriteRequest = (endpoint, movieId) => {
@@ -11,7 +13,7 @@ export const useFavorites = () => {
         return $fetch(endpoint, {
             method: 'POST',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: {
                 'Authorization': `Bearer ${authToken.value}`
             }
