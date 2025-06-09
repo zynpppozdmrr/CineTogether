@@ -7,7 +7,7 @@ WORKDIR /app
 # 3. Gereken dosyaları kopyala
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY .env .env
+
 
 
 # 4. Geri kalan tüm dosyaları kopyala
