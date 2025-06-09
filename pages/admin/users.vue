@@ -12,17 +12,21 @@
         </div>
 
         <div v-else class="divide-y divide-gray-200 dark:divide-gray-700">
-            <div v-for="user in users" :key="user.id" class="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-dim-800">
+            <div v-for="user in users" :key="user.id" class="p-4 flex items-center justify-between">
+                
                 <div class="flex items-center space-x-4">
-                    <img :src="user.profile_picture_url || '/default-avatar.png'" class="w-10 h-10 rounded-full" />
+                    <NuxtLink :to="`/profile/${user.username}`">
+                        <img :src="user.profile_picture_url || '/default-avatar.png'" class="w-10 h-10 rounded-full hover:opacity-80" />
+                    </NuxtLink>
                     <div>
-                        <p class="font-bold text-gray-900 dark:text-white">{{ user.full_name }}</p>
+                        <NuxtLink :to="`/profile/${user.username}`">
+                            <p class="font-bold text-gray-900 dark:text-white hover:underline">{{ user.full_name }}</p>
+                        </NuxtLink>
                         <p class="text-sm text-gray-500">@{{ user.username }}</p>
                     </div>
                 </div>
-                
                 <div v-if="loggedInUser.id !== user.id">
-                    <select @change="changeUserRole(user, $event.target.value)" :value="user.role" class="bg-gray-200 dark:bg-dim-400 border-gray-300 dark:border-gray-600 rounded-md text-sm">
+                    <select @change="changeUserRole(user, $event.target.value)" :value="user.role" class="bg-gray-200 dark:bg-dim-400 border-gray-300 dark:border-gray-600 dark:text-white rounded-md text-sm">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>

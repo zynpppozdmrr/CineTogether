@@ -4,17 +4,17 @@
             
             <NuxtLink to="/movies" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group" active-class="text-purple-500">
                 <FilmIcon class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500" />
-                <span class="text-xs">Movies</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500">Movies</span>
             </NuxtLink>
 
             <NuxtLink to="/lists" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group" active-class="text-purple-500">
                 <ViewListIcon class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500" />
-                <span class="text-xs">Lists</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500" >Lists</span>
             </NuxtLink>
 
             <NuxtLink to="/favorites" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group" active-class="text-purple-500">
                 <BookmarkIcon class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500" />
-                <span class="text-xs">Favorites</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500">Favorites</span>
             </NuxtLink>
 
             <button @click="$emit('openSearch')" type="button" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
@@ -24,7 +24,7 @@
 
             <NuxtLink v-if="user" :to="'/profile/' + user.username" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group" active-class="text-purple-500">
                 <UserIcon class="w-6 h-6 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500" />
-                <span class="text-xs">Profile</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-500">Profile</span>
             </NuxtLink>
 
         </div>

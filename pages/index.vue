@@ -7,7 +7,7 @@
         </div>
 
         <div v-else>
-            <div v-for="post in homePosts" :key="post.id">
+          
 
     <PostCard 
         v-for="post in homePosts" 
@@ -18,7 +18,7 @@
     />
            </div>
         </div>
-    </div>
+
 </template>
 
 <script setup>
