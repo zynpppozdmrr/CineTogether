@@ -1,29 +1,28 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { useAuthUser, useAuthToken } = useAuth()
-  const user = useAuthUser()
-  const token = useAuthToken()
+    const { useAuthUser, useAuthToken } = useAuth()
+    const user = useAuthUser()
+    const token = useAuthToken()
 
-  const isAuthPage = to.path === '/login'
+    const isAuthPage = to.path === '/login'
 
-  // 1. Eğer route bir API endpoint'ine benziyorsa (örnek: /api/...)
-  if (to.path.startsWith('/api/')) {
-    return // middleware müdahale etmesin
-  }
-
-  // 2. Giriş yapılmışsa ve /login sayfasına gitmeye çalışıyorsa yönlendir
-  if (user.value && isAuthPage) {
-    return navigateTo('/')
-  }
-
-  // 3. Giriş yapılmamışsa ve /login dışında bir sayfaya gidiyorsa yönlendir
-  if (!user.value && !isAuthPage) {
-    return navigateTo('/login')
-  }
-
-  // 4. Admin kontrolü
-  if (to.path.startsWith('/admin')) {
-    if (user.value?.role !== 'admin') {
-      return navigateTo('/')
+    // Eğer kullanıcı giriş yapmışsa ve login sayfasına gitmeye çalışıyorsa,
+    // onu anasayfaya yönlendir.
+    if (user.value && isAuthPage) {
+        return navigateTo('/')
     }
-  }
+
+    // Eğer kullanıcı giriş yapmamışsa ve login sayfası dışında bir yere
+    // gitmeye çalışıyorsa, onu login sayfasına yönlendir.
+    if (!user.value && !isAuthPage) {
+        return navigateTo('/login')
+    }
+
+     // YENİ BÖLÜM: Admin Rota Koruması
+    // Eğer gidilecek yol '/admin' ile başlıyorsa
+    if (to.path.startsWith('/admin')) {
+        // Ve kullanıcı admin değilse, anasayfaya yönlendir.
+        if (user.value?.role !== 'admin') {
+            return navigateTo('/')
+        }
+    }
 })
