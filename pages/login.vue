@@ -137,9 +137,9 @@ function validateRegisterForm() {
         registerErrors.email = 'Please enter a valid email address.';
         isValid = false;
     }
-    // Password validation: min 8 chars, 1 uppercase, 1 lowercase, 1 number
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(registerData.password)) {
-        registerErrors.password = 'Password must be at least 8 characters long, with one uppercase letter and one number.';
+   // Password validation: min 8 chars, 1 uppercase, 1 lowercase, 1 number
+     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_\-+=`~[\]{}|:;"'<>,.?/]{8,}$/.test(registerData.password)) {
+        registerErrors.password = 'Min. 8 characters, with one uppercase, one lowercase, and one number.';
         isValid = false;
     }
     return isValid;
