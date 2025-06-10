@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col h-screen p-2">
 
     <div class="relative m-2">
       <div class="absolute flex items-center h-full pl-4 text-gray-600 cursor-pointer">
@@ -67,7 +67,10 @@
             {{ showAllRecommendations ? 'Show less' : 'Show more' }}
         </div>
     </div>
-    
+    <div class="mt-auto p-4 text-center text-xs text-gray-400">
+        <p>© 2025 CineTogether</p>
+        <p>Created by Cavit Utku Tipici & Zeynep Özdemir</p>
+    </div>
     
   </div>
 </template>
@@ -108,7 +111,7 @@ async function performSearch(query) {
   loading.value = true;
   try {
     const response = await $fetch(`/api/movies/search?title=${query}`, {
-      baseURL: 'http://127.0.0.1:5000'
+      baseURL: apiBase
     });
     searchResults.value = response.movies;
   } catch (error) {
