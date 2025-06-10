@@ -28,6 +28,7 @@ import UISpinner from '~/components/UI/Spinner.vue';
 
 const { twitterBorderColor } = useTailwindConfig();
 const { useAuthUser } = useAuth(); // We already have this
+const refreshTrigger = useRefreshTrigger();
 
 const homePosts = ref([]);
 const users = ref([]);
@@ -75,6 +76,10 @@ function getAuthor(post) {
 function handleFormSuccess() {
     getPosts();
 }
+
+watch(refreshTrigger, () => {
+    getPosts();
+});
 
 onBeforeMount(() => {
     getPosts();
