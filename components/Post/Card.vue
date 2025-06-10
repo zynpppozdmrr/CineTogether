@@ -24,8 +24,9 @@
                         <img :src="post.image_url" class="w-full h-auto max-h-96 object-cover rounded-2xl" />
                     </div>
 
-                    <div class="flex items-center justify-between mt-3">
-                        <div class="flex items-center space-x-20">
+                     <div class="flex items-center justify-between mt-3">
+                        
+                        <div class="flex items-center space-x-6 sm:space-x-10">
                             <div @click.stop.prevent class="flex items-center text-gray-400 group">
                                  <IconChat class="w-5 h-5 group-hover:text-purple-400" />
                                 <p class="ml-1 text-sm group-hover:text-purple-400">{{ post.comments_count }}</p>
