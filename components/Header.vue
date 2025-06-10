@@ -9,6 +9,11 @@
                 <h2 class="text-xl font-bold text-gray-800 dark:text-white">{{ title }}</h2>
             </div>
 
+            <div class="flex items-center space-x-2">
+                <button @click="handleRefresh" :disabled="isRefreshing" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800">
+                    <RefreshIcon class="w-6 h-6 text-gray-800 dark:text-white" :class="{ 'animate-spin': isRefreshing }" />
+                </button>
+             
             <div class="sm:hidden">
                 <Menu as="div" class="relative">
                     <MenuButton class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dim-800">
@@ -46,19 +51,23 @@
                 </Menu>
             </div>
         </div>
+        </div>
     </div>
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { ArrowLeftIcon, DotsVerticalIcon, SunIcon, MoonIcon, LogoutIcon, UserGroupIcon } from '@heroicons/vue/outline'
+import { ArrowLeftIcon, DotsVerticalIcon, SunIcon, MoonIcon, LogoutIcon, UserGroupIcon, RefreshIcon } from '@heroicons/vue/outline'
+import { useRefreshTrigger } from '~/composables/useRefresh.js';
 
 const { useAuthUser, logout } = useAuth();
 const { isDarkMode, toggleTheme } = useTheme();
 const user = useAuthUser();
 const route = useRoute();
 const router = useRouter();
+const isRefreshing = ref(false);
+const refreshTrigger = useRefreshTrigger();
 
 // Mevcut sayfaya göre başlığı dinamik olarak belirle
 const title = computed(() => {
@@ -71,6 +80,19 @@ const title = computed(() => {
     if (route.name.startsWith('admin')) return 'Admin';
     return 'Home';
 });
+
+async function handleRefresh() {
+    isRefreshing.value = true;
+    
+    // Global tetikleyiciyi artırarak dinleyen sayfaların yenilenmesini sağla
+    refreshTrigger.value++;
+
+    // Animasyonun görünmesi için küçük bir gecikme
+    setTimeout(() => {
+        isRefreshing.value = false;
+    }, 1000); 
+}
+
 
 // ================== DEĞİŞİKLİK BURADA ==================
 // Sadece ana sayfada (path: '/') değilken geri butonunu göster
