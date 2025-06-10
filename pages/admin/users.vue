@@ -77,7 +77,7 @@ async function changeUserRole(userToUpdate, newRole) {
         await $fetch(`/api/users/${userToUpdate.username}`, {
             method: 'PUT',
             body: formData,
-            baseURL: 'http://127.0.0.1:5000',
+            baseURL: apiBase,
             headers: { 'Authorization': `Bearer ${authToken.value}` }
         });
 
