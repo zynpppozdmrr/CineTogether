@@ -83,6 +83,8 @@ const search = ref('');
 const searchResults = ref([]);
 const loading = ref(false);
 let debounceTimer = null;
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 // 'search' ref'ini izliyoruz
 watch(search, (newValue) => {
